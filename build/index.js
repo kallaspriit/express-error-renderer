@@ -29,47 +29,50 @@ function expressErrorRenderer(userOptions = {}) {
         // 	response.status(500).send(`IMAGE: ${error.message}`);
         // 	return;
         // }
-        // either render the full error details or just a friendly message
-        if (options.showDetails) {
-            const resolver = stackman();
-            // attempt to get error callsites
-            resolver.callsites(error, { sourcemap: true }, (callsitesError, callsites) => {
-                // handle callsites failure
-                if (callsitesError) {
-                    response.status(500).send(renderError({
-                        title: 'Internal error occurred',
-                        message: `Also getting error callsites failed (${callsitesError.message})`,
-                    }));
-                    return;
-                }
-                // ignore files in node_modules
-                const filteredCallsites = callsites.filter(callsite => {
-                    const filename = callsite.getFileName();
-                    if (!filename) {
-                        return false;
-                    }
-                    return isProjectTrace(options.basePath, filename);
-                });
-                resolver.sourceContexts(filteredCallsites, { lines: 20 }, (contextsError, contexts) => {
-                    if (contextsError) {
-                        response.status(500).send(renderError({
-                            title: 'Internal error occurred',
-                            message: `Also getting error callsites contexts failed (${contextsError.message})`,
-                        }));
-                        return;
-                    }
-                    const renderedStackFrames = filteredCallsites.map((callsite, index) => {
-                        return renderStackFrame(index, callsite, options.basePath, contexts[index]);
-                    });
-                    response.status(500).send(renderErrorPage(error, renderedStackFrames, options.basePath));
-                });
-            });
-        }
-        else {
+        // show simple error view if details are disabled
+        if (!options.showDetails) {
             response.status(500).send(renderError({
                 title: 'Internal error occurred',
             }));
+            return;
         }
+        // using stackman for getting details stack traces
+        const resolver = stackman();
+        // attempt to get error callsites
+        resolver.callsites(error, { sourcemap: true }, (callsitesError, callsites) => {
+            // handle callsites failure
+            if (callsitesError) {
+                response.status(500).send(renderError({
+                    title: 'Internal error occurred',
+                    message: `Also getting error callsites failed (${callsitesError.message})`,
+                }));
+                return;
+            }
+            // ignore files in node_modules
+            const filteredCallsites = callsites.filter(callsite => {
+                const filename = callsite.getFileName();
+                if (!filename) {
+                    return false;
+                }
+                // only render traces for project files
+                return isProjectTrace(options.basePath, filename);
+            });
+            // fetch source contexts
+            resolver.sourceContexts(filteredCallsites, { lines: 20 }, (contextsError, contexts) => {
+                if (contextsError) {
+                    // getting source contexts failed for some reason, show simple error
+                    response.status(500).send(renderError({
+                        title: 'Internal error occurred',
+                        message: `Also getting error callsites contexts failed (${contextsError.message})`,
+                    }));
+                    return;
+                }
+                // render stack frames
+                const renderedStackFrames = filteredCallsites.map((callsite, index) => renderStackFrame(index, callsite, options.basePath, contexts[index]));
+                // send the error page response
+                response.status(500).send(renderErrorPage(error, renderedStackFrames, options.basePath));
+            });
+        });
     };
 }
 exports.default = expressErrorRenderer;
