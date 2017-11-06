@@ -296,7 +296,7 @@ function renderErrorPage(error: Error, stackFrames: string[], basePath: string):
           <div class="error-message__name">${name}</div>
           <div class="error-message__message">${message}</div>
         </div>
-        ${renderStackTrace(stack, basePath)}
+        ${renderStackTrace(stack || '', basePath)}
         ${Object.keys(errorDetails).length > 0 ? renderErrorDetails(errorDetails) : ''}
       </div>
       ${stackFrames.join('\n')}

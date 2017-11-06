@@ -244,7 +244,7 @@ function renderErrorPage(error, stackFrames, basePath) {
           <div class="error-message__name">${name}</div>
           <div class="error-message__message">${message}</div>
         </div>
-        ${renderStackTrace(stack, basePath)}
+        ${renderStackTrace(stack || '', basePath)}
         ${Object.keys(errorDetails).length > 0 ? renderErrorDetails(errorDetails) : ''}
       </div>
       ${stackFrames.join('\n')}
@@ -282,7 +282,7 @@ function renderContext(lineNumber, context) {
       <code class="language-typescript">${sourceCode}</code></pre>
   `;
 }
-function renderStackTrace(stack = '', basePath) {
+function renderStackTrace(stack, basePath) {
     /* istanbul ignore if */
     if (stack.length === 0) {
         return '<div class="no-stack-trace">no stack trace available</div>';
