@@ -1,6 +1,5 @@
 import * as express from 'express';
 import * as supertest from 'supertest';
-import 'ts-jest';
 import expressErrorRenderer, {formatXhrError, renderError} from '../index';
 import setupApp from './app';
 

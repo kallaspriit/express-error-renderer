@@ -10,7 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
 const supertest = require("supertest");
-require("ts-jest");
 const index_1 = require("../index");
 const app_1 = require("./app");
 let app;

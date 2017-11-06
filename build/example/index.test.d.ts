@@ -1,4 +1,3 @@
-import 'ts-jest';
 export interface IErrorDetails {
     [x: string]: any;
 }
