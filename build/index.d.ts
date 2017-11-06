@@ -10,12 +10,12 @@ export interface IOptions {
     formatXhrError?: FormatXhrErrorFn;
 }
 export interface IErrorDetails {
-    title?: string;
-    message?: string;
+    title: string;
+    message: string;
 }
 export interface IErrorRest {
     [x: string]: any;
 }
 export default function expressErrorRenderer(userOptions?: Partial<IOptions>): ErrorRequestHandler;
 export declare function formatXhrError(error: Error, options: IOptions): IJsonPayload;
-export declare function renderError(details?: IErrorDetails): string;
+export declare function renderError(details?: Partial<IErrorDetails>): string;

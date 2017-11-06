@@ -41,6 +41,7 @@ function expressErrorRenderer(userOptions = {}) {
         // attempt to get error callsites
         resolver.callsites(error, { sourcemap: true }, (callsitesError, callsites) => {
             // handle callsites failure
+            /* istanbul ignore if */
             if (callsitesError) {
                 response.status(500).send(renderError({
                     title: 'Internal error occurred',
@@ -51,6 +52,7 @@ function expressErrorRenderer(userOptions = {}) {
             // ignore files in node_modules
             const filteredCallsites = callsites.filter(callsite => {
                 const filename = callsite.getFileName();
+                /* istanbul ignore if */
                 if (!filename) {
                     return false;
                 }
@@ -59,6 +61,7 @@ function expressErrorRenderer(userOptions = {}) {
             });
             // fetch source contexts
             resolver.sourceContexts(filteredCallsites, { lines: 20 }, (contextsError, contexts) => {
+                /* istanbul ignore if */
                 if (contextsError) {
                     // getting source contexts failed for some reason, show simple error
                     response.status(500).send(renderError({
@@ -79,9 +82,7 @@ exports.default = expressErrorRenderer;
 function formatXhrError(error, options) {
     if (options.showDetails) {
         const { name, message, stack } = error, errorRest = __rest(error, ["name", "message", "stack"]);
-        // handle special case of error having details
-        const errorDetails = errorRest.details ? errorRest.details : errorRest;
-        return Object.assign({ error: error.message, stack: stack ? stack.split('\n').map(line => line.trim()) : [] }, errorDetails);
+        return Object.assign({ error: error.message, stack: stack ? stack.split('\n').map(line => line.trim()) : [] }, errorRest);
     }
     else {
         return {
@@ -269,6 +270,7 @@ function formatFilename(basePath, filename) {
     return path.relative(basePath, filename).replace(/\\/g, '/');
 }
 function renderContext(lineNumber, context) {
+    /* istanbul ignore if */
     if (!context) {
         return '<div class="no-context">no context info available</div>';
     }
@@ -279,26 +281,9 @@ function renderContext(lineNumber, context) {
     <pre class="source-code line-numbers" data-start="${firstLineNumber}" data-line="${highlightLineNumber}">
       <code class="language-typescript">${sourceCode}</code></pre>
   `;
-    // return `
-    //   <ol class="source-lines" start="${firstLineNumber}">
-    //     ${context.pre
-    // 			.map(line => `<li class="source-lines__line source-lines__line--pre"><span>${formatLine(line)}</span></li>`)
-    // 			.join('\n')}
-    //     <li class="source-lines__line source-lines__line--main"><span>${formatLine(context.line)}</span></li>
-    //     ${context.post
-    // 			.map(line => `<li class="source-lines__line source-lines__line--post"><span>${formatLine(line)}</span></li>`)
-    // 			.join('\n')}
-    //   </ol>
-    // `;
 }
-// function formatLine(line: string): string {
-// 	// make it possible to copy empty lines
-// 	if (line.length === 0) {
-// 		return ' ';
-// 	}
-// 	return line;
-// }
 function renderStackTrace(stack = '', basePath) {
+    /* istanbul ignore if */
     if (stack.length === 0) {
         return '<div class="no-stack-trace">no stack trace available</div>';
     }
@@ -317,6 +302,7 @@ function renderErrorDetails(details) {
 function renderStackLine(line, basePath) {
     const regexp = /^\s*at (?:((?:\[object object\])?\S+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$/i;
     const matches = regexp.exec(line);
+    /* istanbul ignore if */
     if (!matches || matches.length !== 5) {
         return line;
     }

@@ -14,6 +14,7 @@
 - Returns configurable JSON error payloads for XHR requests.
 - Uses [PrismJS](http://prismjs.com) to pretty-render the stack traces
 - Written in [TypeScript](https://www.typescriptlang.org/).
+- Includes [100% test coverage](https://coveralls.io/github/kallaspriit/express-error-renderer).
 
 ## Installation
 
@@ -36,4 +37,4 @@ npm install express-error-renderer
 
 See `src/example` directory for a full working example code and run `npm start` to try it out for yourself.
 
-![Error example](https://github.com/kallaspriit/express-error-renderer/blob/master/screenshots/error.jpg)
+![Error example](https://github.com/kallaspriit/express-error-renderer/blob/master/screenshots/error.png)

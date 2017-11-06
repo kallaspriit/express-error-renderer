@@ -16,8 +16,8 @@ export interface IOptions {
 }
 
 export interface IErrorDetails {
-	title?: string;
-	message?: string;
+	title: string;
+	message: string;
 }
 
 export interface IErrorRest {
@@ -68,6 +68,7 @@ export default function expressErrorRenderer(userOptions: Partial<IOptions> = {}
 		// attempt to get error callsites
 		resolver.callsites(error, {sourcemap: true}, (callsitesError, callsites) => {
 			// handle callsites failure
+			/* istanbul ignore if */
 			if (callsitesError) {
 				response.status(500).send(
 					renderError({
@@ -83,6 +84,7 @@ export default function expressErrorRenderer(userOptions: Partial<IOptions> = {}
 			const filteredCallsites = callsites.filter(callsite => {
 				const filename = callsite.getFileName();
 
+				/* istanbul ignore if */
 				if (!filename) {
 					return false;
 				}
@@ -93,6 +95,7 @@ export default function expressErrorRenderer(userOptions: Partial<IOptions> = {}
 
 			// fetch source contexts
 			resolver.sourceContexts(filteredCallsites, {lines: 20}, (contextsError, contexts) => {
+				/* istanbul ignore if */
 				if (contextsError) {
 					// getting source contexts failed for some reason, show simple error
 					response.status(500).send(
@@ -121,13 +124,10 @@ export function formatXhrError(error: Error, options: IOptions): IJsonPayload {
 	if (options.showDetails) {
 		const {name, message, stack, ...errorRest} = error;
 
-		// handle special case of error having details
-		const errorDetails = (errorRest as IErrorRest).details ? (errorRest as IErrorRest).details : errorRest;
-
 		return {
 			error: error.message,
 			stack: stack ? stack.split('\n').map(line => line.trim()) : [],
-			...errorDetails,
+			...errorRest,
 		};
 	} else {
 		return {
@@ -136,7 +136,7 @@ export function formatXhrError(error: Error, options: IOptions): IJsonPayload {
 	}
 }
 
-export function renderError(details: IErrorDetails = {}) {
+export function renderError(details: Partial<IErrorDetails> = {}) {
 	const info: IErrorDetails = {
 		title: 'Error occurred',
 		message: 'The error has been logged and our engineers are looking into it, sorry about this.',
@@ -331,6 +331,7 @@ function formatFilename(basePath: string, filename: string): string {
 }
 
 function renderContext(lineNumber: number, context?: stackman.ICallsiteContext) {
+	/* istanbul ignore if */
 	if (!context) {
 		return '<div class="no-context">no context info available</div>';
 	}
@@ -343,30 +344,10 @@ function renderContext(lineNumber: number, context?: stackman.ICallsiteContext) 
     <pre class="source-code line-numbers" data-start="${firstLineNumber}" data-line="${highlightLineNumber}">
       <code class="language-typescript">${sourceCode}</code></pre>
   `;
-
-	// return `
-	//   <ol class="source-lines" start="${firstLineNumber}">
-	//     ${context.pre
-	// 			.map(line => `<li class="source-lines__line source-lines__line--pre"><span>${formatLine(line)}</span></li>`)
-	// 			.join('\n')}
-	//     <li class="source-lines__line source-lines__line--main"><span>${formatLine(context.line)}</span></li>
-	//     ${context.post
-	// 			.map(line => `<li class="source-lines__line source-lines__line--post"><span>${formatLine(line)}</span></li>`)
-	// 			.join('\n')}
-	//   </ol>
-	// `;
 }
 
-// function formatLine(line: string): string {
-// 	// make it possible to copy empty lines
-// 	if (line.length === 0) {
-// 		return ' ';
-// 	}
-
-// 	return line;
-// }
-
-function renderStackTrace(stack: string = '', basePath: string): string {
+function renderStackTrace(stack: string, basePath: string): string {
+	/* istanbul ignore if */
 	if (stack.length === 0) {
 		return '<div class="no-stack-trace">no stack trace available</div>';
 	}
@@ -382,7 +363,7 @@ function renderStackTrace(stack: string = '', basePath: string): string {
   `;
 }
 
-function renderErrorDetails(details: IErrorDetails) {
+function renderErrorDetails(details: Partial<IErrorDetails>) {
 	return `<div class="error-details">${JSON.stringify(details, null, '  ')}</div>`;
 }
 
@@ -390,6 +371,7 @@ function renderStackLine(line: string, basePath: string): string {
 	const regexp = /^\s*at (?:((?:\[object object\])?\S+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$/i;
 	const matches = regexp.exec(line);
 
+	/* istanbul ignore if */
 	if (!matches || matches.length !== 5) {
 		return line;
 	}
