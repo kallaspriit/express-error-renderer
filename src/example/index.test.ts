@@ -37,6 +37,8 @@ describe('create-user-route', () => {
 			.send();
 
 		expect(response.status).toEqual(500);
-		expect(response.body).toMatchSnapshot();
+		expect(response.body.error).toEqual('Thrown error message');
+		expect(response.body.stack).toBeInstanceOf(Array);
+		expect(response.body.stack.length).toBeGreaterThan(0);
 	});
 });

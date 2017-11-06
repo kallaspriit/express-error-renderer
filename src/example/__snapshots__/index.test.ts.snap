@@ -1048,48 +1048,4 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
   "
 `;
 
-exports[`create-user-route should return error info as json if requested with XHR 1`] = `
-Object {
-  "error": "Thrown error message",
-  "payload": null,
-  "stack": Array [
-    "Error: Thrown error message",
-    "at app.get (D:\\\\projects\\\\express-error-renderer\\\\src\\\\example\\\\app.ts:20:9)",
-    "at Layer.handle [as handle_request] (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\layer.js:95:5)",
-    "at next (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\route.js:137:13)",
-    "at Route.dispatch (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\route.js:112:3)",
-    "at Layer.handle [as handle_request] (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\layer.js:95:5)",
-    "at D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\index.js:281:22",
-    "at Function.process_params (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\index.js:335:12)",
-    "at next (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\index.js:275:10)",
-    "at jsonParser (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\body-parser\\\\lib\\\\types\\\\json.js:109:7)",
-    "at Layer.handle [as handle_request] (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\layer.js:95:5)",
-    "at trim_prefix (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\index.js:317:13)",
-    "at D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\index.js:284:7",
-    "at Function.process_params (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\index.js:335:12)",
-    "at next (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\index.js:275:10)",
-    "at expressInit (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\middleware\\\\init.js:40:5)",
-    "at Layer.handle [as handle_request] (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\layer.js:95:5)",
-    "at trim_prefix (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\index.js:317:13)",
-    "at D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\index.js:284:7",
-    "at Function.process_params (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\index.js:335:12)",
-    "at next (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\index.js:275:10)",
-    "at query (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\middleware\\\\query.js:45:5)",
-    "at Layer.handle [as handle_request] (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\layer.js:95:5)",
-    "at trim_prefix (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\index.js:317:13)",
-    "at D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\index.js:284:7",
-    "at Function.process_params (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\index.js:335:12)",
-    "at next (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\index.js:275:10)",
-    "at Function.handle (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\router\\\\index.js:174:3)",
-    "at Function.handle (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\application.js:174:10)",
-    "at Server.app (D:\\\\projects\\\\express-error-renderer\\\\node_modules\\\\express\\\\lib\\\\express.js:39:9)",
-    "at emitTwo (events.js:125:13)",
-    "at Server.emit (events.js:213:7)",
-    "at parserOnIncoming (_http_server.js:602:12)",
-    "at HTTPParser.parserOnHeadersComplete (_http_common.js:116:23)",
-  ],
-  "success": false,
-}
-`;
-
 exports[`create-user-route should return valid index endpoint result 1`] = `"Hello!"`;
