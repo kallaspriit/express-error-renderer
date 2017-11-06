@@ -68,7 +68,6 @@ export default function expressErrorRenderer(userOptions: Partial<IOptions> = {}
 		// attempt to get error callsites
 		resolver.callsites(error, {sourcemap: true}, (callsitesError, callsites) => {
 			// handle callsites failure
-			/* istanbul ignore if */
 			if (callsitesError) {
 				response.status(500).send(
 					renderError({
@@ -296,7 +295,7 @@ function renderErrorPage(error: Error, stackFrames: string[], basePath: string):
           <div class="error-message__name">${name}</div>
           <div class="error-message__message">${message}</div>
         </div>
-        ${renderStackTrace(stack || '', basePath)}
+        ${renderStackTrace(stack, basePath)}
         ${Object.keys(errorDetails).length > 0 ? renderErrorDetails(errorDetails) : ''}
       </div>
       ${stackFrames.join('\n')}
@@ -346,9 +345,9 @@ function renderContext(lineNumber: number, context?: stackman.ICallsiteContext) 
   `;
 }
 
-function renderStackTrace(stack: string, basePath: string): string {
+function renderStackTrace(stack: string | undefined, basePath: string): string {
 	/* istanbul ignore if */
-	if (stack.length === 0) {
+	if (!stack || stack.length === 0) {
 		return '<div class="no-stack-trace">no stack trace available</div>';
 	}
 

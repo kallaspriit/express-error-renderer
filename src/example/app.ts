@@ -25,6 +25,13 @@ export default async function setupApp(): Promise<express.Express> {
 		next(new Error('Forwarded error message'));
 	});
 
+	// forwards an error
+	app.get('/object-error', (_request, _response, next) => {
+		next({
+			message: 'Test message',
+		});
+	});
+
 	// render express errors, add this as the last middleware
 	app.use(
 		expressErrorRenderer({

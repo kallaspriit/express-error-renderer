@@ -41,7 +41,6 @@ function expressErrorRenderer(userOptions = {}) {
         // attempt to get error callsites
         resolver.callsites(error, { sourcemap: true }, (callsitesError, callsites) => {
             // handle callsites failure
-            /* istanbul ignore if */
             if (callsitesError) {
                 response.status(500).send(renderError({
                     title: 'Internal error occurred',
@@ -244,7 +243,7 @@ function renderErrorPage(error, stackFrames, basePath) {
           <div class="error-message__name">${name}</div>
           <div class="error-message__message">${message}</div>
         </div>
-        ${renderStackTrace(stack || '', basePath)}
+        ${renderStackTrace(stack, basePath)}
         ${Object.keys(errorDetails).length > 0 ? renderErrorDetails(errorDetails) : ''}
       </div>
       ${stackFrames.join('\n')}
@@ -284,7 +283,7 @@ function renderContext(lineNumber, context) {
 }
 function renderStackTrace(stack, basePath) {
     /* istanbul ignore if */
-    if (stack.length === 0) {
+    if (!stack || stack.length === 0) {
         return '<div class="no-stack-trace">no stack trace available</div>';
     }
     const lines = stack.split('\n');

@@ -205,4 +205,22 @@ describe('create-user-route', () => {
 		expect(response.status).toEqual(500);
 		expect(response.text).toMatchSnapshot();
 	});
+
+	it('renders errors without trace', async () => {
+		const server = express();
+
+		server.get('/error', (_request, _response, _next) => {
+			throw {
+				message: 'Error message',
+			};
+		});
+
+		server.use(expressErrorRenderer());
+
+		app = supertest(server);
+		const response = await app.get('/error');
+
+		expect(response.status).toEqual(500);
+		expect(response.text).toMatchSnapshot();
+	});
 });

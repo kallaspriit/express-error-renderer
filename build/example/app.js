@@ -30,6 +30,12 @@ function setupApp() {
         app.get('/next-error', (_request, _response, next) => {
             next(new Error('Forwarded error message'));
         });
+        // forwards an error
+        app.get('/object-error', (_request, _response, next) => {
+            next({
+                message: 'Test message',
+            });
+        });
         // render express errors, add this as the last middleware
         app.use(_1.default({
             // application base path, used to decide which stack frames to include and for formatting the error source location

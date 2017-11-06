@@ -1750,6 +1750,44 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
   "
 `;
 
+exports[`create-user-route renders errors without trace 1`] = `
+"
+    <html>
+    <head>
+      <meta charset=\\"utf-8\\"/>
+      <title>Error</title>
+      <style>
+        body {
+          background-color: #252526;
+          color: #FFF;
+          margin: 0;
+          padding: 20px;
+        }
+        a {
+          color: #FFF;
+        }
+        .error-message {
+          padding: 20px;
+          margin-bottom: 20px;
+          background-color: #900;
+          border-radius: 5px;
+        }
+      </style>
+    </head>
+    <body>
+      <h1>Internal error occurred</h1>
+      <p>
+        <div class=\\"error-message\\">Also getting error callsites failed (Could not process callsites)</div>
+      </p>
+      <p>
+        <a href=\\"/\\">Navigate to index</a> |
+        <a href=\\"javascript: window.location.reload()\\">Attempt to reload page</a>
+      </p>
+    </body>
+    </html>
+  "
+`;
+
 exports[`create-user-route should render forwarded error 1`] = `
 "
     <html>
@@ -2242,6 +2280,13 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
 		next(new Error('Forwarded error message'));
 	});
 
+	// forwards an error
+	app.get('/object-error', (_request, _response, next) => {
+		next({
+			message: 'Test message',
+		});
+	});
+
 	// render express errors, add this as the last middleware
 	app.use(
 		expressErrorRenderer({
@@ -2258,14 +2303,7 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
 					return {
 						payload: null,
 						success: false,
-						error: error.message,
-						stack: error.stack ? error.stack.split('\\\\n').map(line => line.trim()) : [],
-					};
-				} else {
-					return {
-						payload: null,
-						success: false,
-						error: 'Internal error occurred',</code></pre>
+						error: error.message,</code></pre>
   
     </div>
   
@@ -2770,6 +2808,13 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
 		next(new Error('Forwarded error message'));
 	});
 
+	// forwards an error
+	app.get('/object-error', (_request, _response, next) => {
+		next({
+			message: 'Test message',
+		});
+	});
+
 	// render express errors, add this as the last middleware
 	app.use(
 		expressErrorRenderer({
@@ -2782,14 +2827,7 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
 			// returns JSON payload for XHR requests, configure the output here
 			formatXhrError: (error, options) => {
 				// only show actual error message and stack trace if showing details is enabled
-				if (options.showDetails) {
-					return {
-						payload: null,
-						success: false,
-						error: error.message,
-						stack: error.stack ? error.stack.split('\\\\n').map(line => line.trim()) : [],
-					};
-				} else {</code></pre>
+				if (options.showDetails) {</code></pre>
   
     </div>
   

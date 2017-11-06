@@ -158,5 +158,18 @@ describe('create-user-route', () => {
         expect(response.status).toEqual(500);
         expect(response.text).toMatchSnapshot();
     }));
+    it('renders errors without trace', () => __awaiter(this, void 0, void 0, function* () {
+        const server = express();
+        server.get('/error', (_request, _response, _next) => {
+            throw {
+                message: 'Error message',
+            };
+        });
+        server.use(index_1.default());
+        app = supertest(server);
+        const response = yield app.get('/error');
+        expect(response.status).toEqual(500);
+        expect(response.text).toMatchSnapshot();
+    }));
 });
 //# sourceMappingURL=index.test.js.map
