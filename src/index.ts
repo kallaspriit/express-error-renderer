@@ -363,7 +363,12 @@ function renderStackTrace(stack: string | undefined, basePath: string): string {
 }
 
 function renderErrorDetails(details: Partial<IErrorDetails>) {
-	return `<div class="error-details">${JSON.stringify(details, null, '  ')}</div>`;
+	// check for circular json
+	try {
+		return `<div class="error-details">${JSON.stringify(details, null, '  ')}</div>`;
+	} catch (e) {
+		return `<div class="error-details"><em>error details contained circular reference</em></div>`;
+	}
 }
 
 function renderStackLine(line: string, basePath: string): string {
