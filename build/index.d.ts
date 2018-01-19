@@ -1,5 +1,5 @@
 /// <reference types="express" />
-import { ErrorRequestHandler } from 'express';
+import { ErrorRequestHandler } from "express";
 export declare type FormatXhrErrorFn = (error: Error, options: IOptions) => IJsonPayload;
 export interface IJsonPayload {
     [x: string]: string | string[] | number | boolean | null;

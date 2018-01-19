@@ -10,10 +10,11 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs = require("fs");
+const HttpStatus = require("http-status-codes");
 const path = require("path");
 const stackman = require("stackman");
 function expressErrorRenderer(userOptions = {}) {
-    const options = Object.assign({ basePath: path.join(__dirname, '..', '..'), showDetails: true }, userOptions);
+    const options = Object.assign({ basePath: path.join(__dirname, "..", ".."), showDetails: true }, userOptions);
     return (error, request, response, _next) => {
         // respond to xhr requests with json (true if X-Requested-With header equals XMLHttpRequest)
         if (request.xhr) {
@@ -21,18 +22,13 @@ function expressErrorRenderer(userOptions = {}) {
             const payload = options.formatXhrError
                 ? options.formatXhrError(error, options)
                 : formatXhrError(error, options);
-            response.status(500).send(payload);
+            response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(payload);
             return;
         }
-        // else if (request.headers.accept.indexOf('image/') !== -1) {
-        // 	// image was requested
-        // 	response.status(500).send(`IMAGE: ${error.message}`);
-        // 	return;
-        // }
         // show simple error view if details are disabled
         if (!options.showDetails) {
-            response.status(500).send(renderError({
-                title: 'Internal error occurred',
+            response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(renderError({
+                title: "Internal error occurred"
             }));
             return;
         }
@@ -41,10 +37,11 @@ function expressErrorRenderer(userOptions = {}) {
         // attempt to get error callsites
         resolver.callsites(error, { sourcemap: true }, (callsitesError, callsites) => {
             // handle callsites failure
+            // tslint:disable-next-line:strict-boolean-expressions
             if (callsitesError) {
-                response.status(500).send(renderError({
-                    title: 'Internal error occurred',
-                    message: `Also getting error callsites failed (${callsitesError.message})`,
+                response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(renderError({
+                    title: "Internal error occurred",
+                    message: `Also getting error callsites failed (${callsitesError.message})`
                 }));
                 return;
             }
@@ -52,6 +49,7 @@ function expressErrorRenderer(userOptions = {}) {
             const filteredCallsites = callsites.filter(callsite => {
                 const filename = callsite.getFileName();
                 /* istanbul ignore if */
+                // tslint:disable-next-line:strict-boolean-expressions
                 if (!filename) {
                     return false;
                 }
@@ -61,18 +59,21 @@ function expressErrorRenderer(userOptions = {}) {
             // fetch source contexts
             resolver.sourceContexts(filteredCallsites, { lines: 20 }, (contextsError, contexts) => {
                 /* istanbul ignore if */
+                // tslint:disable-next-line:strict-boolean-expressions
                 if (contextsError) {
                     // getting source contexts failed for some reason, show simple error
-                    response.status(500).send(renderError({
-                        title: 'Internal error occurred',
-                        message: `Also getting error callsites contexts failed (${contextsError.message})`,
+                    response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(renderError({
+                        title: "Internal error occurred",
+                        message: `Also getting error callsites contexts failed (${contextsError.message})`
                     }));
                     return;
                 }
                 // render stack frames
                 const renderedStackFrames = filteredCallsites.map((callsite, index) => renderStackFrame(index, callsite, options.basePath, contexts[index]));
                 // send the error page response
-                response.status(500).send(renderErrorPage(error, renderedStackFrames, options.basePath));
+                response
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .send(renderErrorPage(error, renderedStackFrames, options.basePath));
             });
         });
     };
@@ -81,17 +82,17 @@ exports.default = expressErrorRenderer;
 function formatXhrError(error, options) {
     if (options.showDetails) {
         const { name, message, stack } = error, errorRest = __rest(error, ["name", "message", "stack"]);
-        return Object.assign({ error: error.message, stack: stack ? stack.split('\n').map(line => line.trim()) : [] }, errorRest);
+        return Object.assign({ error: error.message, stack: typeof stack === "string" ? stack.split("\n").map(line => line.trim()) : [] }, errorRest);
     }
     else {
         return {
-            error: 'Internal error occurred',
+            error: "Internal error occurred"
         };
     }
 }
 exports.formatXhrError = formatXhrError;
 function renderError(details = {}) {
-    const info = Object.assign({ title: 'Error occurred', message: 'The error has been logged and our engineers are looking into it, sorry about this.' }, details);
+    const info = Object.assign({ title: "Error occurred", message: "The error has been logged and our engineers are looking into it, sorry about this." }, details);
     return `
     <html>
     <head>
@@ -130,7 +131,7 @@ function renderError(details = {}) {
 }
 exports.renderError = renderError;
 function isProjectTrace(basePath, line) {
-    return line.indexOf(basePath) !== -1 && line.indexOf('node_modules') === -1;
+    return line.indexOf(basePath) !== -1 && line.indexOf("node_modules") === -1;
 }
 function renderErrorPage(error, stackFrames, basePath) {
     const { name, message, stack } = error, errorDetails = __rest(error, ["name", "message", "stack"]);
@@ -140,8 +141,8 @@ function renderErrorPage(error, stackFrames, basePath) {
       <meta charset="utf-8"/>
       <title>Error</title>
 
-      <style>${fs.readFileSync(path.join(__dirname, '..', 'static', 'prism.css'), 'utf8')}</style>
-      <script>${fs.readFileSync(path.join(__dirname, '..', 'static', 'prism.js'), 'utf8')}</script>
+      <style>${fs.readFileSync(path.join(__dirname, "..", "static", "prism.css"), "utf8")}</style>
+      <script>${fs.readFileSync(path.join(__dirname, "..", "static", "prism.js"), "utf8")}</script>
 
       <style>
         body {
@@ -244,9 +245,9 @@ function renderErrorPage(error, stackFrames, basePath) {
           <div class="error-message__message">${message}</div>
         </div>
         ${renderStackTrace(stack, basePath)}
-        ${Object.keys(errorDetails).length > 0 ? renderErrorDetails(errorDetails) : ''}
+        ${Object.keys(errorDetails).length > 0 ? renderErrorDetails(errorDetails) : ""}
       </div>
-      ${stackFrames.join('\n')}
+      ${stackFrames.join("\n")}
     </body>
     </html>
   `;
@@ -266,7 +267,7 @@ function renderStackFrame(index, callsite, basePath, context) {
   `;
 }
 function formatFilename(basePath, filename) {
-    return path.relative(basePath, filename).replace(/\\/g, '/');
+    return path.relative(basePath, filename).replace(/\\/g, "/");
 }
 function renderContext(lineNumber, context) {
     /* istanbul ignore if */
@@ -275,7 +276,7 @@ function renderContext(lineNumber, context) {
     }
     const firstLineNumber = lineNumber - context.pre.length;
     const highlightLineNumber = lineNumber - firstLineNumber + 1;
-    const sourceCode = `${context.pre.join('\n')}\n${context.line}\n${context.post.join('\n')}`;
+    const sourceCode = `${context.pre.join("\n")}\n${context.line}\n${context.post.join("\n")}`;
     return `
     <pre class="source-code line-numbers" data-start="${firstLineNumber}" data-line="${highlightLineNumber}">
       <code class="language-typescript">${sourceCode}</code></pre>
@@ -283,12 +284,12 @@ function renderContext(lineNumber, context) {
 }
 function renderStackTrace(stack, basePath) {
     /* istanbul ignore if */
-    if (!stack || stack.length === 0) {
+    if (typeof stack !== "string" || stack.length === 0) {
         return '<div class="no-stack-trace">no stack trace available</div>';
     }
-    const lines = stack.split('\n');
+    const lines = stack.split("\n");
     const filteredLines = lines.filter(line => isProjectTrace(basePath, line));
-    const renderedLines = filteredLines.map(line => renderStackLine(line, basePath)).join('\n');
+    const renderedLines = filteredLines.map(line => renderStackLine(line, basePath)).join("\n");
     return `
     <ol class="stack-trace">
       ${renderedLines}
@@ -298,7 +299,7 @@ function renderStackTrace(stack, basePath) {
 function renderErrorDetails(details) {
     // check for circular json
     try {
-        return `<div class="error-details">${JSON.stringify(details, null, '  ')}</div>`;
+        return `<div class="error-details">${JSON.stringify(details, undefined, "  ")}</div>`;
     }
     catch (e) {
         return `<div class="error-details"><em>error details contained circular reference</em></div>`;
@@ -307,18 +308,20 @@ function renderErrorDetails(details) {
 function renderStackLine(line, basePath) {
     const regexp = /^\s*at (?:((?:\[object object\])?\S+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$/i;
     const matches = regexp.exec(line);
+    const expectedMatchCount = 5;
     /* istanbul ignore if */
-    if (!matches || matches.length !== 5) {
+    if (matches === null || matches.length !== expectedMatchCount) {
         return line;
     }
     const method = matches[1];
     const filename = matches[2];
+    // tslint:disable-next-line:no-magic-numbers
     const lineNumber = matches[3];
     const formattedFilename = formatFilename(basePath, filename);
     return `
     <li>
       <span class="stack-line__source">${formattedFilename}:${lineNumber}</span>
-      ${method ? `<span class="stack-line__method">(${method})</span>` : ''}
+      ${typeof method === "string" ? `<span class="stack-line__method">(${method})</span>` : ""}
     </li>
   `;
 }

@@ -497,7 +497,7 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <ol class=\\"stack-trace\\">
       
     <li>
-      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:62</span>
+      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:64</span>
       <span class=\\"stack-line__method\\">(server.get)</span>
     </li>
   
@@ -509,51 +509,51 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <div class=\\"stack-frame\\">
       <div class=\\"source-file\\">
         <span class=\\"source-file__index\\">#1</span>
-        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">56</span>
+        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">57</span>
       </div>
       
-    <pre class=\\"source-code line-numbers\\" data-start=\\"36\\" data-line=\\"21\\">
-      <code class=\\"language-typescript\\">		expect(response.text).toMatchSnapshot();
-	});
+    <pre class=\\"source-code line-numbers\\" data-start=\\"37\\" data-line=\\"21\\">
+      <code class=\\"language-typescript\\">    expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(response.text).toMatchSnapshot();
+  });
 
-	it('should render forwarded error', async () => {
-		const response = await app.get('/next-error');
+  it(\\"should render forwarded error\\", async () => {
+    const response = await app.get(\\"/next-error\\");
 
-		expect(response.status).toEqual(500);
-		expect(response.text).toMatchSnapshot();
-	});
+    expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(response.text).toMatchSnapshot();
+  });
 
-	it('should return error info as json if requested with XHR', async () => {
-		const response = await app
-			.get('/throw-error')
-			.set('X-Requested-With', 'XMLHttpRequest')
-			.send();
+  it(\\"should return error info as json if requested with XHR\\", async () => {
+    const response = await app
+      .get(\\"/throw-error\\")
+      .set(\\"X-Requested-With\\", \\"XMLHttpRequest\\")
+      .send();
 
-		expect(response.status).toEqual(500);
-		expect(response.body.error).toEqual('Thrown error message');
-		expect(response.body.stack).toBeInstanceOf(Array);
-		expect(response.body.stack.length).toBeGreaterThan(0);
-	});
+    expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(response.body.error).toEqual(\\"Thrown error message\\");
+    expect(response.body.stack).toBeInstanceOf(Array);
+    expect(response.body.stack.length).toBeGreaterThan(0);
+  });
 
-	it('can use default config', async () => {
-		const server = express();
+  it(\\"can use default config\\", async () => {
+    const server = express();
 
-		server.get('/error', (_request, _response, _next) => {
-			throw new Error('Error message');
-		});
+    server.get(\\"/error\\", (_request, _response, _next) => {
+      throw new Error(\\"Error message\\");
+    });
 
-		server.use(expressErrorRenderer());
+    server.use(expressErrorRenderer());
 
-		app = supertest(server);
-		const response = await app.get('/error');
+    app = supertest(server);
+    const response = await app.get(\\"/error\\");
 
-		expect(response.status).toEqual(500);
-		expect(response.text).toMatchSnapshot();
-	});
+    expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(response.text).toMatchSnapshot();
+  });
 
-	it('can be configured not to show error details', async () => {
-		const server = express();
-</code></pre>
+  it(\\"can be configured not to show error details\\", async () => {
+    const server = express();</code></pre>
   
     </div>
   
@@ -1021,7 +1021,7 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <ol class=\\"stack-trace\\">
       
     <li>
-      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:158</span>
+      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:160</span>
       <span class=\\"stack-line__method\\">(server.get)</span>
     </li>
   
@@ -1039,51 +1039,51 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <div class=\\"stack-frame\\">
       <div class=\\"source-file\\">
         <span class=\\"source-file__index\\">#1</span>
-        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">124</span>
+        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">125</span>
       </div>
       
-    <pre class=\\"source-code line-numbers\\" data-start=\\"104\\" data-line=\\"21\\">
-      <code class=\\"language-typescript\\">		const response = await app
-			.get('/error')
-			.set('X-Requested-With', 'XMLHttpRequest')
-			.send();
+    <pre class=\\"source-code line-numbers\\" data-start=\\"105\\" data-line=\\"21\\">
+      <code class=\\"language-typescript\\">    app = supertest(server);
+    const response = await app
+      .get(\\"/error\\")
+      .set(\\"X-Requested-With\\", \\"XMLHttpRequest\\")
+      .send();
 
-		expect(response.status).toEqual(500);
-		expect(response.body.error).toEqual('Error message');
-		expect(response.body.stack).toBeInstanceOf(Array);
-		expect(response.body.stack.length).toBeGreaterThan(0);
-	});
+    expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(response.body.error).toEqual(\\"Error message\\");
+    expect(response.body.stack).toBeInstanceOf(Array);
+    expect(response.body.stack.length).toBeGreaterThan(0);
+  });
 
-	it(\\"doesn't return XHR error stack if details are disabled\\", async () => {
-		const server = express();
+  it(\\"doesn't return XHR error stack if details are disabled\\", async () => {
+    const server = express();
 
-		server.get('/error', (_request, _response, _next) => {
-			throw new Error('Error message');
-		});
+    server.get(\\"/error\\", (_request, _response, _next) => {
+      throw new Error(\\"Error message\\");
+    });
 
-		server.use(
-			expressErrorRenderer({
-				showDetails: false,
-			}),
-		);
+    server.use(
+      expressErrorRenderer({
+        showDetails: false
+      })
+    );
 
-		app = supertest(server);
-		const response = await app
-			.get('/error')
-			.set('X-Requested-With', 'XMLHttpRequest')
-			.send();
+    app = supertest(server);
+    const response = await app
+      .get(\\"/error\\")
+      .set(\\"X-Requested-With\\", \\"XMLHttpRequest\\")
+      .send();
 
-		expect(response.status).toEqual(500);
-		expect(response.body.error).toEqual('Internal error occurred');
-		expect(response.body.stack).toBeUndefined();
-	});
+    expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(response.body.error).toEqual(\\"Internal error occurred\\");
+    expect(response.body.stack).toBeUndefined();
+  });
 
-	it('provides generic method for rendering a simple error with default title and message', async () => {
-		const error = renderError();
+  it(\\"provides generic method for rendering a simple error with default title and message\\", async () => {
+    const error = renderError();
 
-		expect(error).toMatchSnapshot();
-	});
-</code></pre>
+    expect(error).toMatchSnapshot();
+  });</code></pre>
   
     </div>
   
@@ -1627,13 +1627,13 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <ol class=\\"stack-trace\\">
       
     <li>
-      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:195</span>
+      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:197</span>
       
     </li>
   
 
     <li>
-      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:196</span>
+      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:198</span>
       <span class=\\"stack-line__method\\">(server.get)</span>
     </li>
   
@@ -1645,51 +1645,51 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <div class=\\"stack-frame\\">
       <div class=\\"source-file\\">
         <span class=\\"source-file__index\\">#1</span>
-        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">151</span>
+        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">152</span>
       </div>
       
-    <pre class=\\"source-code line-numbers\\" data-start=\\"131\\" data-line=\\"21\\">
-      <code class=\\"language-typescript\\">			.set('X-Requested-With', 'XMLHttpRequest')
-			.send();
+    <pre class=\\"source-code line-numbers\\" data-start=\\"132\\" data-line=\\"21\\">
+      <code class=\\"language-typescript\\">      .get(\\"/error\\")
+      .set(\\"X-Requested-With\\", \\"XMLHttpRequest\\")
+      .send();
 
-		expect(response.status).toEqual(500);
-		expect(response.body.error).toEqual('Internal error occurred');
-		expect(response.body.stack).toBeUndefined();
-	});
+    expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(response.body.error).toEqual(\\"Internal error occurred\\");
+    expect(response.body.stack).toBeUndefined();
+  });
 
-	it('provides generic method for rendering a simple error with default title and message', async () => {
-		const error = renderError();
+  it(\\"provides generic method for rendering a simple error with default title and message\\", async () => {
+    const error = renderError();
 
-		expect(error).toMatchSnapshot();
-	});
+    expect(error).toMatchSnapshot();
+  });
 
-	it('provides generic method for rendering a simple error, one can provide custom title and message', async () => {
-		const error = renderError({
-			title: 'Custom title',
-			message: 'Custom message',
-		});
+  it(\\"provides generic method for rendering a simple error, one can provide custom title and message\\", async () => {
+    const error = renderError({
+      title: \\"Custom title\\",
+      message: \\"Custom message\\"
+    });
 
-		expect(error).toMatchSnapshot();
-	});
+    expect(error).toMatchSnapshot();
+  });
 
-	it('error can include additional information', async () => {
-		const server = express();
+  it(\\"error can include additional information\\", async () => {
+    const server = express();
 
-		server.get('/error', (_request, _response, _next) => {
-			throw new DetailedError('Detailed error message', {
-				user: {
-					name: 'Jack Daniels',
-				},
-			});
-		});
+    server.get(\\"/error\\", (_request, _response, _next) => {
+      throw new DetailedError(\\"Detailed error message\\", {
+        user: {
+          name: \\"Jack Daniels\\"
+        }
+      });
+    });
 
-		server.use(expressErrorRenderer());
+    server.use(expressErrorRenderer());
 
-		app = supertest(server);
-		const response = await app.get('/error');
+    app = supertest(server);
+    const response = await app.get(\\"/error\\");
 
-		expect(response.status).toEqual(500);
-		expect(response.text).toContain('Jack Daniels');</code></pre>
+    expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);</code></pre>
   
     </div>
   
@@ -1697,51 +1697,51 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <div class=\\"stack-frame\\">
       <div class=\\"source-file\\">
         <span class=\\"source-file__index\\">#2</span>
-        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">152</span>
+        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">153</span>
       </div>
       
-    <pre class=\\"source-code line-numbers\\" data-start=\\"132\\" data-line=\\"21\\">
-      <code class=\\"language-typescript\\">			.send();
+    <pre class=\\"source-code line-numbers\\" data-start=\\"133\\" data-line=\\"21\\">
+      <code class=\\"language-typescript\\">      .set(\\"X-Requested-With\\", \\"XMLHttpRequest\\")
+      .send();
 
-		expect(response.status).toEqual(500);
-		expect(response.body.error).toEqual('Internal error occurred');
-		expect(response.body.stack).toBeUndefined();
-	});
+    expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(response.body.error).toEqual(\\"Internal error occurred\\");
+    expect(response.body.stack).toBeUndefined();
+  });
 
-	it('provides generic method for rendering a simple error with default title and message', async () => {
-		const error = renderError();
+  it(\\"provides generic method for rendering a simple error with default title and message\\", async () => {
+    const error = renderError();
 
-		expect(error).toMatchSnapshot();
-	});
+    expect(error).toMatchSnapshot();
+  });
 
-	it('provides generic method for rendering a simple error, one can provide custom title and message', async () => {
-		const error = renderError({
-			title: 'Custom title',
-			message: 'Custom message',
-		});
+  it(\\"provides generic method for rendering a simple error, one can provide custom title and message\\", async () => {
+    const error = renderError({
+      title: \\"Custom title\\",
+      message: \\"Custom message\\"
+    });
 
-		expect(error).toMatchSnapshot();
-	});
+    expect(error).toMatchSnapshot();
+  });
 
-	it('error can include additional information', async () => {
-		const server = express();
+  it(\\"error can include additional information\\", async () => {
+    const server = express();
 
-		server.get('/error', (_request, _response, _next) => {
-			throw new DetailedError('Detailed error message', {
-				user: {
-					name: 'Jack Daniels',
-				},
-			});
-		});
+    server.get(\\"/error\\", (_request, _response, _next) => {
+      throw new DetailedError(\\"Detailed error message\\", {
+        user: {
+          name: \\"Jack Daniels\\"
+        }
+      });
+    });
 
-		server.use(expressErrorRenderer());
+    server.use(expressErrorRenderer());
 
-		app = supertest(server);
-		const response = await app.get('/error');
+    app = supertest(server);
+    const response = await app.get(\\"/error\\");
 
-		expect(response.status).toEqual(500);
-		expect(response.text).toContain('Jack Daniels');
-		expect(response.text).toMatchSnapshot();</code></pre>
+    expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(response.text).toContain(\\"Jack Daniels\\");</code></pre>
   
     </div>
   
@@ -2263,47 +2263,47 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
       </div>
       
     <pre class=\\"source-code line-numbers\\" data-start=\\"11\\" data-line=\\"21\\">
-      <code class=\\"language-typescript\\">	app.use(bodyParser.json());
+      <code class=\\"language-typescript\\">  app.use(bodyParser.json());
 
-	// index endpoint
-	app.get('/', (_request, response, _next) => {
-		response.send('Hello!');
-	});
+  // index endpoint
+  app.get(\\"/\\", (_request, response, _next) => {
+    response.send(\\"Hello!\\");
+  });
 
-	// throws an error
-	app.get('/throw-error', (_request, _response, _next) => {
-		throw new Error('Thrown error message');
-	});
+  // throws an error
+  app.get(\\"/throw-error\\", (_request, _response, _next) => {
+    throw new Error(\\"Thrown error message\\");
+  });
 
-	// forwards an error
-	app.get('/next-error', (_request, _response, next) => {
-		next(new Error('Forwarded error message'));
-	});
+  // forwards an error
+  app.get(\\"/next-error\\", (_request, _response, next) => {
+    next(new Error(\\"Forwarded error message\\"));
+  });
 
-	// forwards an error
-	app.get('/object-error', (_request, _response, next) => {
-		next({
-			message: 'Test message',
-		});
-	});
+  // forwards an error
+  app.get(\\"/object-error\\", (_request, _response, next) => {
+    next({
+      message: \\"Test message\\"
+    });
+  });
 
-	// render express errors, add this as the last middleware
-	app.use(
-		expressErrorRenderer({
-			// application base path, used to decide which stack frames to include and for formatting the error source location
-			basePath: path.join(__dirname, '..', '..'),
+  // render express errors, add this as the last middleware
+  app.use(
+    expressErrorRenderer({
+      // application base path, used to decide which stack frames to include and for formatting the error source location
+      basePath: path.join(__dirname, \\"..\\", \\"..\\"),
 
-			// showing details should probably be disabled for production sites
-			showDetails: true,
+      // showing details should probably be disabled for production sites
+      showDetails: true,
 
-			// returns JSON payload for XHR requests, configure the output here
-			formatXhrError: (error, options) => {
-				// only show actual error message and stack trace if showing details is enabled
-				if (options.showDetails) {
-					return {
-						payload: null,
-						success: false,
-						error: error.message,</code></pre>
+      // returns JSON payload for XHR requests, configure the output here
+      formatXhrError: (error, options) => {
+        // only show actual error message and stack trace if showing details is enabled
+        if (options.showDetails) {
+          return {
+            payload: null,
+            success: false,
+            error: error.message,</code></pre>
   
     </div>
   
@@ -2787,47 +2787,47 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
       </div>
       
     <pre class=\\"source-code line-numbers\\" data-start=\\"7\\" data-line=\\"21\\">
-      <code class=\\"language-typescript\\">	// create a new express app
-	const app = express();
+      <code class=\\"language-typescript\\">  // create a new express app
+  const app = express();
 
-	// add json body parser
-	app.use(bodyParser.json());
+  // add json body parser
+  app.use(bodyParser.json());
 
-	// index endpoint
-	app.get('/', (_request, response, _next) => {
-		response.send('Hello!');
-	});
+  // index endpoint
+  app.get(\\"/\\", (_request, response, _next) => {
+    response.send(\\"Hello!\\");
+  });
 
-	// throws an error
-	app.get('/throw-error', (_request, _response, _next) => {
-		throw new Error('Thrown error message');
-	});
+  // throws an error
+  app.get(\\"/throw-error\\", (_request, _response, _next) => {
+    throw new Error(\\"Thrown error message\\");
+  });
 
-	// forwards an error
-	app.get('/next-error', (_request, _response, next) => {
-		next(new Error('Forwarded error message'));
-	});
+  // forwards an error
+  app.get(\\"/next-error\\", (_request, _response, next) => {
+    next(new Error(\\"Forwarded error message\\"));
+  });
 
-	// forwards an error
-	app.get('/object-error', (_request, _response, next) => {
-		next({
-			message: 'Test message',
-		});
-	});
+  // forwards an error
+  app.get(\\"/object-error\\", (_request, _response, next) => {
+    next({
+      message: \\"Test message\\"
+    });
+  });
 
-	// render express errors, add this as the last middleware
-	app.use(
-		expressErrorRenderer({
-			// application base path, used to decide which stack frames to include and for formatting the error source location
-			basePath: path.join(__dirname, '..', '..'),
+  // render express errors, add this as the last middleware
+  app.use(
+    expressErrorRenderer({
+      // application base path, used to decide which stack frames to include and for formatting the error source location
+      basePath: path.join(__dirname, \\"..\\", \\"..\\"),
 
-			// showing details should probably be disabled for production sites
-			showDetails: true,
+      // showing details should probably be disabled for production sites
+      showDetails: true,
 
-			// returns JSON payload for XHR requests, configure the output here
-			formatXhrError: (error, options) => {
-				// only show actual error message and stack trace if showing details is enabled
-				if (options.showDetails) {</code></pre>
+      // returns JSON payload for XHR requests, configure the output here
+      formatXhrError: (error, options) => {
+        // only show actual error message and stack trace if showing details is enabled
+        if (options.showDetails) {</code></pre>
   
     </div>
   

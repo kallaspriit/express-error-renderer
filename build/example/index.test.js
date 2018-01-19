@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express = require("express");
+const HttpStatus = require("http-status-codes");
 const supertest = require("supertest");
 const index_1 = require("../index");
 const app_1 = require("./app");
@@ -17,157 +18,157 @@ class DetailedError extends Error {
     constructor(message, details = null) {
         super(message);
         this.details = details;
-        this.name = 'DetailedError';
+        this.name = "DetailedError";
     }
 }
 exports.DetailedError = DetailedError;
-describe('create-user-route', () => {
+describe("create-user-route", () => {
     beforeEach(() => __awaiter(this, void 0, void 0, function* () {
         app = supertest(yield app_1.default());
     }));
-    it('should return valid index endpoint result', () => __awaiter(this, void 0, void 0, function* () {
-        const response = yield app.get('/');
-        expect(response.status).toEqual(200);
+    it("should return valid index endpoint result", () => __awaiter(this, void 0, void 0, function* () {
+        const response = yield app.get("/");
+        expect(response.status).toEqual(HttpStatus.OK);
         expect(response.text).toMatchSnapshot();
     }));
-    it('should render thrown error', () => __awaiter(this, void 0, void 0, function* () {
-        const response = yield app.get('/throw-error');
-        expect(response.status).toEqual(500);
+    it("should render thrown error", () => __awaiter(this, void 0, void 0, function* () {
+        const response = yield app.get("/throw-error");
+        expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
         expect(response.text).toMatchSnapshot();
     }));
-    it('should render forwarded error', () => __awaiter(this, void 0, void 0, function* () {
-        const response = yield app.get('/next-error');
-        expect(response.status).toEqual(500);
+    it("should render forwarded error", () => __awaiter(this, void 0, void 0, function* () {
+        const response = yield app.get("/next-error");
+        expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
         expect(response.text).toMatchSnapshot();
     }));
-    it('should return error info as json if requested with XHR', () => __awaiter(this, void 0, void 0, function* () {
+    it("should return error info as json if requested with XHR", () => __awaiter(this, void 0, void 0, function* () {
         const response = yield app
-            .get('/throw-error')
-            .set('X-Requested-With', 'XMLHttpRequest')
+            .get("/throw-error")
+            .set("X-Requested-With", "XMLHttpRequest")
             .send();
-        expect(response.status).toEqual(500);
-        expect(response.body.error).toEqual('Thrown error message');
+        expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+        expect(response.body.error).toEqual("Thrown error message");
         expect(response.body.stack).toBeInstanceOf(Array);
         expect(response.body.stack.length).toBeGreaterThan(0);
     }));
-    it('can use default config', () => __awaiter(this, void 0, void 0, function* () {
+    it("can use default config", () => __awaiter(this, void 0, void 0, function* () {
         const server = express();
-        server.get('/error', (_request, _response, _next) => {
-            throw new Error('Error message');
+        server.get("/error", (_request, _response, _next) => {
+            throw new Error("Error message");
         });
         server.use(index_1.default());
         app = supertest(server);
-        const response = yield app.get('/error');
-        expect(response.status).toEqual(500);
+        const response = yield app.get("/error");
+        expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
         expect(response.text).toMatchSnapshot();
     }));
-    it('can be configured not to show error details', () => __awaiter(this, void 0, void 0, function* () {
+    it("can be configured not to show error details", () => __awaiter(this, void 0, void 0, function* () {
         const server = express();
-        server.get('/error', (_request, _response, _next) => {
-            throw new Error('Error message');
+        server.get("/error", (_request, _response, _next) => {
+            throw new Error("Error message");
         });
         server.use(index_1.default({
-            showDetails: false,
+            showDetails: false
         }));
         app = supertest(server);
-        const response = yield app.get('/error');
-        expect(response.status).toEqual(500);
+        const response = yield app.get("/error");
+        expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
         expect(response.text).toMatchSnapshot();
     }));
-    it('uses default XHR error formatter by default', () => __awaiter(this, void 0, void 0, function* () {
+    it("uses default XHR error formatter by default", () => __awaiter(this, void 0, void 0, function* () {
         const server = express();
-        server.get('/error', (_request, _response, _next) => {
-            throw new Error('Error message');
+        server.get("/error", (_request, _response, _next) => {
+            throw new Error("Error message");
         });
         server.use(index_1.default());
         app = supertest(server);
         const response = yield app
-            .get('/error')
-            .set('X-Requested-With', 'XMLHttpRequest')
+            .get("/error")
+            .set("X-Requested-With", "XMLHttpRequest")
             .send();
-        expect(response.status).toEqual(500);
-        expect(response.body.error).toEqual('Error message');
+        expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+        expect(response.body.error).toEqual("Error message");
         expect(response.body.stack).toBeInstanceOf(Array);
         expect(response.body.stack.length).toBeGreaterThan(0);
     }));
     it("doesn't return XHR error stack if details are disabled", () => __awaiter(this, void 0, void 0, function* () {
         const server = express();
-        server.get('/error', (_request, _response, _next) => {
-            throw new Error('Error message');
+        server.get("/error", (_request, _response, _next) => {
+            throw new Error("Error message");
         });
         server.use(index_1.default({
-            showDetails: false,
+            showDetails: false
         }));
         app = supertest(server);
         const response = yield app
-            .get('/error')
-            .set('X-Requested-With', 'XMLHttpRequest')
+            .get("/error")
+            .set("X-Requested-With", "XMLHttpRequest")
             .send();
-        expect(response.status).toEqual(500);
-        expect(response.body.error).toEqual('Internal error occurred');
+        expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+        expect(response.body.error).toEqual("Internal error occurred");
         expect(response.body.stack).toBeUndefined();
     }));
-    it('provides generic method for rendering a simple error with default title and message', () => __awaiter(this, void 0, void 0, function* () {
+    it("provides generic method for rendering a simple error with default title and message", () => __awaiter(this, void 0, void 0, function* () {
         const error = index_1.renderError();
         expect(error).toMatchSnapshot();
     }));
-    it('provides generic method for rendering a simple error, one can provide custom title and message', () => __awaiter(this, void 0, void 0, function* () {
+    it("provides generic method for rendering a simple error, one can provide custom title and message", () => __awaiter(this, void 0, void 0, function* () {
         const error = index_1.renderError({
-            title: 'Custom title',
-            message: 'Custom message',
+            title: "Custom title",
+            message: "Custom message"
         });
         expect(error).toMatchSnapshot();
     }));
-    it('error can include additional information', () => __awaiter(this, void 0, void 0, function* () {
+    it("error can include additional information", () => __awaiter(this, void 0, void 0, function* () {
         const server = express();
-        server.get('/error', (_request, _response, _next) => {
-            throw new DetailedError('Detailed error message', {
+        server.get("/error", (_request, _response, _next) => {
+            throw new DetailedError("Detailed error message", {
                 user: {
-                    name: 'Jack Daniels',
-                },
+                    name: "Jack Daniels"
+                }
             });
         });
         server.use(index_1.default());
         app = supertest(server);
-        const response = yield app.get('/error');
-        expect(response.status).toEqual(500);
-        expect(response.text).toContain('Jack Daniels');
+        const response = yield app.get("/error");
+        expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+        expect(response.text).toContain("Jack Daniels");
         expect(response.text).toMatchSnapshot();
     }));
-    it('xhr error formatter accepts error without stack', () => __awaiter(this, void 0, void 0, function* () {
+    it("xhr error formatter accepts error without stack", () => __awaiter(this, void 0, void 0, function* () {
         const error = index_1.formatXhrError({
-            name: 'Error',
-            message: 'Error message',
+            name: "Error",
+            message: "Error message"
         }, {
-            basePath: '',
-            showDetails: true,
+            basePath: "",
+            showDetails: true
         });
         expect(error).toMatchSnapshot();
     }));
-    it('renders errors from anonymous functions', () => __awaiter(this, void 0, void 0, function* () {
+    it("renders errors from anonymous functions", () => __awaiter(this, void 0, void 0, function* () {
         const server = express();
-        server.get('/error', (_request, _response, _next) => {
+        server.get("/error", (_request, _response, _next) => {
             (() => {
-                throw new Error('Error message');
+                throw new Error("Error message");
             })();
         });
         server.use(index_1.default());
         app = supertest(server);
-        const response = yield app.get('/error');
-        expect(response.status).toEqual(500);
+        const response = yield app.get("/error");
+        expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
         expect(response.text).toMatchSnapshot();
     }));
-    it('renders errors without trace', () => __awaiter(this, void 0, void 0, function* () {
+    it("renders errors without trace", () => __awaiter(this, void 0, void 0, function* () {
         const server = express();
-        server.get('/error', (_request, _response, _next) => {
+        server.get("/error", (_request, _response, _next) => {
             throw {
-                message: 'Error message',
+                message: "Error message"
             };
         });
         server.use(index_1.default());
         app = supertest(server);
-        const response = yield app.get('/error');
-        expect(response.status).toEqual(500);
+        const response = yield app.get("/error");
+        expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
         expect(response.text).toMatchSnapshot();
     }));
 });

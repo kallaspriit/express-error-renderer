@@ -1,148 +1,148 @@
-import {ErrorRequestHandler, NextFunction, Request, Response} from 'express';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as stackman from 'stackman';
+import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
+import * as fs from "fs";
+import * as HttpStatus from "http-status-codes";
+import * as path from "path";
+import * as stackman from "stackman";
 
 export type FormatXhrErrorFn = (error: Error, options: IOptions) => IJsonPayload;
 
 export interface IJsonPayload {
-	[x: string]: string | string[] | number | boolean | null;
+  [x: string]: string | string[] | number | boolean | null;
 }
 
 export interface IOptions {
-	basePath: string;
-	showDetails: boolean;
-	formatXhrError?: FormatXhrErrorFn;
+  basePath: string;
+  showDetails: boolean;
+  formatXhrError?: FormatXhrErrorFn;
 }
 
 export interface IErrorDetails {
-	title: string;
-	message: string;
+  title: string;
+  message: string;
 }
 
 export interface IErrorRest {
-	[x: string]: any;
+  // tslint:disable-next-line:no-any
+  [x: string]: any;
 }
 
 export default function expressErrorRenderer(userOptions: Partial<IOptions> = {}): ErrorRequestHandler {
-	const options: IOptions = {
-		basePath: path.join(__dirname, '..', '..'),
-		showDetails: true,
-		...userOptions,
-	};
+  const options: IOptions = {
+    basePath: path.join(__dirname, "..", ".."),
+    showDetails: true,
+    ...userOptions
+  };
 
-	return (error: Error, request: Request, response: Response, _next: NextFunction) => {
-		// respond to xhr requests with json (true if X-Requested-With header equals XMLHttpRequest)
-		if (request.xhr) {
-			// use user-provided formatter if available
-			const payload: IJsonPayload = options.formatXhrError
-				? options.formatXhrError(error, options)
-				: formatXhrError(error, options);
+  return (error: Error, request: Request, response: Response, _next: NextFunction) => {
+    // respond to xhr requests with json (true if X-Requested-With header equals XMLHttpRequest)
+    if (request.xhr) {
+      // use user-provided formatter if available
+      const payload: IJsonPayload = options.formatXhrError
+        ? options.formatXhrError(error, options)
+        : formatXhrError(error, options);
 
-			response.status(500).send(payload);
+      response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(payload);
 
-			return;
-		}
+      return;
+    }
 
-		// else if (request.headers.accept.indexOf('image/') !== -1) {
-		// 	// image was requested
-		// 	response.status(500).send(`IMAGE: ${error.message}`);
+    // show simple error view if details are disabled
+    if (!options.showDetails) {
+      response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(
+        renderError({
+          title: "Internal error occurred"
+        })
+      );
 
-		// 	return;
-		// }
+      return;
+    }
 
-		// show simple error view if details are disabled
-		if (!options.showDetails) {
-			response.status(500).send(
-				renderError({
-					title: 'Internal error occurred',
-				}),
-			);
+    // using stackman for getting details stack traces
+    const resolver = stackman();
 
-			return;
-		}
+    // attempt to get error callsites
+    resolver.callsites(error, { sourcemap: true }, (callsitesError, callsites) => {
+      // handle callsites failure
+      // tslint:disable-next-line:strict-boolean-expressions
+      if (callsitesError) {
+        response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(
+          renderError({
+            title: "Internal error occurred",
+            message: `Also getting error callsites failed (${callsitesError.message})`
+          })
+        );
 
-		// using stackman for getting details stack traces
-		const resolver = stackman();
+        return;
+      }
 
-		// attempt to get error callsites
-		resolver.callsites(error, {sourcemap: true}, (callsitesError, callsites) => {
-			// handle callsites failure
-			if (callsitesError) {
-				response.status(500).send(
-					renderError({
-						title: 'Internal error occurred',
-						message: `Also getting error callsites failed (${callsitesError.message})`,
-					}),
-				);
+      // ignore files in node_modules
+      const filteredCallsites = callsites.filter(callsite => {
+        const filename = callsite.getFileName();
 
-				return;
-			}
+        /* istanbul ignore if */
+        // tslint:disable-next-line:strict-boolean-expressions
+        if (!filename) {
+          return false;
+        }
 
-			// ignore files in node_modules
-			const filteredCallsites = callsites.filter(callsite => {
-				const filename = callsite.getFileName();
+        // only render traces for project files
+        return isProjectTrace(options.basePath, filename);
+      });
 
-				/* istanbul ignore if */
-				if (!filename) {
-					return false;
-				}
+      // fetch source contexts
+      resolver.sourceContexts(filteredCallsites, { lines: 20 }, (contextsError, contexts) => {
+        /* istanbul ignore if */
+        // tslint:disable-next-line:strict-boolean-expressions
+        if (contextsError) {
+          // getting source contexts failed for some reason, show simple error
+          response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(
+            renderError({
+              title: "Internal error occurred",
+              message: `Also getting error callsites contexts failed (${contextsError.message})`
+            })
+          );
 
-				// only render traces for project files
-				return isProjectTrace(options.basePath, filename);
-			});
+          return;
+        }
 
-			// fetch source contexts
-			resolver.sourceContexts(filteredCallsites, {lines: 20}, (contextsError, contexts) => {
-				/* istanbul ignore if */
-				if (contextsError) {
-					// getting source contexts failed for some reason, show simple error
-					response.status(500).send(
-						renderError({
-							title: 'Internal error occurred',
-							message: `Also getting error callsites contexts failed (${contextsError.message})`,
-						}),
-					);
+        // render stack frames
+        const renderedStackFrames = filteredCallsites.map((callsite, index) =>
+          renderStackFrame(index, callsite, options.basePath, contexts[index])
+        );
 
-					return;
-				}
-
-				// render stack frames
-				const renderedStackFrames = filteredCallsites.map((callsite, index) =>
-					renderStackFrame(index, callsite, options.basePath, contexts[index]),
-				);
-
-				// send the error page response
-				response.status(500).send(renderErrorPage(error, renderedStackFrames, options.basePath));
-			});
-		});
-	};
+        // send the error page response
+        response
+          .status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .send(renderErrorPage(error, renderedStackFrames, options.basePath));
+      });
+    });
+  };
 }
 
 export function formatXhrError(error: Error, options: IOptions): IJsonPayload {
-	if (options.showDetails) {
-		const {name, message, stack, ...errorRest} = error;
+  if (options.showDetails) {
+    const { name, message, stack, ...errorRest } = error;
 
-		return {
-			error: error.message,
-			stack: stack ? stack.split('\n').map(line => line.trim()) : [],
-			...errorRest,
-		};
-	} else {
-		return {
-			error: 'Internal error occurred',
-		};
-	}
+    return {
+      error: error.message,
+      stack: typeof stack === "string" ? stack.split("\n").map(line => line.trim()) : [],
+      ...errorRest
+    };
+  } else {
+    return {
+      error: "Internal error occurred"
+    };
+  }
 }
 
 export function renderError(details: Partial<IErrorDetails> = {}) {
-	const info: IErrorDetails = {
-		title: 'Error occurred',
-		message: 'The error has been logged and our engineers are looking into it, sorry about this.',
-		...details,
-	};
+  const info: IErrorDetails = {
+    title: "Error occurred",
+    message: "The error has been logged and our engineers are looking into it, sorry about this.",
+    ...details
+  };
 
-	return `
+  return `
     <html>
     <head>
       <meta charset="utf-8"/>
@@ -180,20 +180,20 @@ export function renderError(details: Partial<IErrorDetails> = {}) {
 }
 
 function isProjectTrace(basePath: string, line: string) {
-	return line.indexOf(basePath) !== -1 && line.indexOf('node_modules') === -1;
+  return line.indexOf(basePath) !== -1 && line.indexOf("node_modules") === -1;
 }
 
 function renderErrorPage(error: Error, stackFrames: string[], basePath: string): string {
-	const {name, message, stack, ...errorDetails} = error;
+  const { name, message, stack, ...errorDetails } = error;
 
-	return `
+  return `
     <html>
     <head>
       <meta charset="utf-8"/>
       <title>Error</title>
 
-      <style>${fs.readFileSync(path.join(__dirname, '..', 'static', 'prism.css'), 'utf8')}</style>
-      <script>${fs.readFileSync(path.join(__dirname, '..', 'static', 'prism.js'), 'utf8')}</script>
+      <style>${fs.readFileSync(path.join(__dirname, "..", "static", "prism.css"), "utf8")}</style>
+      <script>${fs.readFileSync(path.join(__dirname, "..", "static", "prism.js"), "utf8")}</script>
 
       <style>
         body {
@@ -296,25 +296,25 @@ function renderErrorPage(error: Error, stackFrames: string[], basePath: string):
           <div class="error-message__message">${message}</div>
         </div>
         ${renderStackTrace(stack, basePath)}
-        ${Object.keys(errorDetails).length > 0 ? renderErrorDetails(errorDetails) : ''}
+        ${Object.keys(errorDetails).length > 0 ? renderErrorDetails(errorDetails) : ""}
       </div>
-      ${stackFrames.join('\n')}
+      ${stackFrames.join("\n")}
     </body>
     </html>
   `;
 }
 
 function renderStackFrame(
-	index: number,
-	callsite: stackman.ICallsite,
-	basePath: string,
-	context?: stackman.ICallsiteContext,
+  index: number,
+  callsite: stackman.ICallsite,
+  basePath: string,
+  context?: stackman.ICallsiteContext
 ): string {
-	const filename = callsite.getFileName();
-	const formattedFilename = formatFilename(basePath, filename);
-	const lineNumber = callsite.getLineNumber();
+  const filename = callsite.getFileName();
+  const formattedFilename = formatFilename(basePath, filename);
+  const lineNumber = callsite.getLineNumber();
 
-	return `
+  return `
     <div class="stack-frame">
       <div class="source-file">
         <span class="source-file__index">#${index + 1}</span>
@@ -326,36 +326,36 @@ function renderStackFrame(
 }
 
 function formatFilename(basePath: string, filename: string): string {
-	return path.relative(basePath, filename).replace(/\\/g, '/');
+  return path.relative(basePath, filename).replace(/\\/g, "/");
 }
 
 function renderContext(lineNumber: number, context?: stackman.ICallsiteContext) {
-	/* istanbul ignore if */
-	if (!context) {
-		return '<div class="no-context">no context info available</div>';
-	}
+  /* istanbul ignore if */
+  if (!context) {
+    return '<div class="no-context">no context info available</div>';
+  }
 
-	const firstLineNumber = lineNumber - context.pre.length;
-	const highlightLineNumber = lineNumber - firstLineNumber + 1;
-	const sourceCode = `${context.pre.join('\n')}\n${context.line}\n${context.post.join('\n')}`;
+  const firstLineNumber = lineNumber - context.pre.length;
+  const highlightLineNumber = lineNumber - firstLineNumber + 1;
+  const sourceCode = `${context.pre.join("\n")}\n${context.line}\n${context.post.join("\n")}`;
 
-	return `
+  return `
     <pre class="source-code line-numbers" data-start="${firstLineNumber}" data-line="${highlightLineNumber}">
       <code class="language-typescript">${sourceCode}</code></pre>
   `;
 }
 
 function renderStackTrace(stack: string | undefined, basePath: string): string {
-	/* istanbul ignore if */
-	if (!stack || stack.length === 0) {
-		return '<div class="no-stack-trace">no stack trace available</div>';
-	}
+  /* istanbul ignore if */
+  if (typeof stack !== "string" || stack.length === 0) {
+    return '<div class="no-stack-trace">no stack trace available</div>';
+  }
 
-	const lines = stack.split('\n');
-	const filteredLines = lines.filter(line => isProjectTrace(basePath, line));
-	const renderedLines = filteredLines.map(line => renderStackLine(line, basePath)).join('\n');
+  const lines = stack.split("\n");
+  const filteredLines = lines.filter(line => isProjectTrace(basePath, line));
+  const renderedLines = filteredLines.map(line => renderStackLine(line, basePath)).join("\n");
 
-	return `
+  return `
     <ol class="stack-trace">
       ${renderedLines}
     </ol>
@@ -363,32 +363,34 @@ function renderStackTrace(stack: string | undefined, basePath: string): string {
 }
 
 function renderErrorDetails(details: Partial<IErrorDetails>) {
-	// check for circular json
-	try {
-		return `<div class="error-details">${JSON.stringify(details, null, '  ')}</div>`;
-	} catch (e) {
-		return `<div class="error-details"><em>error details contained circular reference</em></div>`;
-	}
+  // check for circular json
+  try {
+    return `<div class="error-details">${JSON.stringify(details, undefined, "  ")}</div>`;
+  } catch (e) {
+    return `<div class="error-details"><em>error details contained circular reference</em></div>`;
+  }
 }
 
 function renderStackLine(line: string, basePath: string): string {
-	const regexp = /^\s*at (?:((?:\[object object\])?\S+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$/i;
-	const matches = regexp.exec(line);
+  const regexp = /^\s*at (?:((?:\[object object\])?\S+(?: \[as \S+\])?) )?\(?(.*?):(\d+)(?::(\d+))?\)?\s*$/i;
+  const matches = regexp.exec(line);
+  const expectedMatchCount = 5;
 
-	/* istanbul ignore if */
-	if (!matches || matches.length !== 5) {
-		return line;
-	}
+  /* istanbul ignore if */
+  if (matches === null || matches.length !== expectedMatchCount) {
+    return line;
+  }
 
-	const method = matches[1];
-	const filename = matches[2];
-	const lineNumber = matches[3];
-	const formattedFilename = formatFilename(basePath, filename);
+  const method = matches[1] as string | undefined;
+  const filename = matches[2];
+  // tslint:disable-next-line:no-magic-numbers
+  const lineNumber = matches[3];
+  const formattedFilename = formatFilename(basePath, filename);
 
-	return `
+  return `
     <li>
       <span class="stack-line__source">${formattedFilename}:${lineNumber}</span>
-      ${method ? `<span class="stack-line__method">(${method})</span>` : ''}
+      ${typeof method === "string" ? `<span class="stack-line__method">(${method})</span>` : ""}
     </li>
   `;
 }
