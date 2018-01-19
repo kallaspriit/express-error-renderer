@@ -1,6 +1,6 @@
 {
   "name": "express-error-renderer",
-  "version": "1.7.3",
+  "version": "1.7.4",
   "description": "Middleware for rendering express errors with error details, source-mapped stack traces.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
