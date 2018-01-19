@@ -15,7 +15,8 @@ const index_1 = require("../index");
 const app_1 = require("./app");
 let app;
 class DetailedError extends Error {
-    constructor(message, details = null) {
+    // tslint:disable-next-line:no-null-keyword
+    constructor(message, details) {
         super(message);
         this.details = details;
         this.name = "DetailedError";

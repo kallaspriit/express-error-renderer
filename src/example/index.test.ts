@@ -12,7 +12,8 @@ export interface IErrorDetails {
 }
 
 export class DetailedError extends Error {
-  constructor(message: string, public details: IErrorDetails | null = null) {
+  // tslint:disable-next-line:no-null-keyword
+  public constructor(message: string, public details?: IErrorDetails) {
     super(message);
 
     this.name = "DetailedError";

@@ -47,6 +47,7 @@ function setupApp() {
                 // only show actual error message and stack trace if showing details is enabled
                 if (options.showDetails) {
                     return {
+                        // tslint:disable-next-line:no-null-keyword
                         payload: null,
                         success: false,
                         error: error.message,
@@ -55,6 +56,7 @@ function setupApp() {
                 }
                 else {
                     return {
+                        // tslint:disable-next-line:no-null-keyword
                         payload: null,
                         success: false,
                         error: "Internal error occurred"

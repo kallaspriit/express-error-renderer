@@ -497,7 +497,7 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <ol class=\\"stack-trace\\">
       
     <li>
-      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:64</span>
+      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:65</span>
       <span class=\\"stack-line__method\\">(server.get)</span>
     </li>
   
@@ -509,10 +509,10 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <div class=\\"stack-frame\\">
       <div class=\\"source-file\\">
         <span class=\\"source-file__index\\">#1</span>
-        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">57</span>
+        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">58</span>
       </div>
       
-    <pre class=\\"source-code line-numbers\\" data-start=\\"37\\" data-line=\\"21\\">
+    <pre class=\\"source-code line-numbers\\" data-start=\\"38\\" data-line=\\"21\\">
       <code class=\\"language-typescript\\">    expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
     expect(response.text).toMatchSnapshot();
   });
@@ -1021,7 +1021,7 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <ol class=\\"stack-trace\\">
       
     <li>
-      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:160</span>
+      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:161</span>
       <span class=\\"stack-line__method\\">(server.get)</span>
     </li>
   
@@ -1039,10 +1039,10 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <div class=\\"stack-frame\\">
       <div class=\\"source-file\\">
         <span class=\\"source-file__index\\">#1</span>
-        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">125</span>
+        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">126</span>
       </div>
       
-    <pre class=\\"source-code line-numbers\\" data-start=\\"105\\" data-line=\\"21\\">
+    <pre class=\\"source-code line-numbers\\" data-start=\\"106\\" data-line=\\"21\\">
       <code class=\\"language-typescript\\">    app = supertest(server);
     const response = await app
       .get(\\"/error\\")
@@ -1627,13 +1627,13 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <ol class=\\"stack-trace\\">
       
     <li>
-      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:197</span>
+      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:198</span>
       
     </li>
   
 
     <li>
-      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:198</span>
+      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:199</span>
       <span class=\\"stack-line__method\\">(server.get)</span>
     </li>
   
@@ -1645,10 +1645,10 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <div class=\\"stack-frame\\">
       <div class=\\"source-file\\">
         <span class=\\"source-file__index\\">#1</span>
-        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">152</span>
+        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">153</span>
       </div>
       
-    <pre class=\\"source-code line-numbers\\" data-start=\\"132\\" data-line=\\"21\\">
+    <pre class=\\"source-code line-numbers\\" data-start=\\"133\\" data-line=\\"21\\">
       <code class=\\"language-typescript\\">      .get(\\"/error\\")
       .set(\\"X-Requested-With\\", \\"XMLHttpRequest\\")
       .send();
@@ -1697,10 +1697,10 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <div class=\\"stack-frame\\">
       <div class=\\"source-file\\">
         <span class=\\"source-file__index\\">#2</span>
-        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">153</span>
+        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">154</span>
       </div>
       
-    <pre class=\\"source-code line-numbers\\" data-start=\\"133\\" data-line=\\"21\\">
+    <pre class=\\"source-code line-numbers\\" data-start=\\"134\\" data-line=\\"21\\">
       <code class=\\"language-typescript\\">      .set(\\"X-Requested-With\\", \\"XMLHttpRequest\\")
       .send();
 
@@ -2301,9 +2301,9 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
         // only show actual error message and stack trace if showing details is enabled
         if (options.showDetails) {
           return {
+            // tslint:disable-next-line:no-null-keyword
             payload: null,
-            success: false,
-            error: error.message,</code></pre>
+            success: false,</code></pre>
   
     </div>
   
