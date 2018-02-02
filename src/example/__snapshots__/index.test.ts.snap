@@ -1064,8 +1064,8 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
 
     server.use(
       expressErrorRenderer({
-        showDetails: false
-      })
+        showDetails: false,
+      }),
     );
 
     app = supertest(server);
@@ -1667,7 +1667,7 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
   it(\\"provides generic method for rendering a simple error, one can provide custom title and message\\", async () => {
     const error = renderError({
       title: \\"Custom title\\",
-      message: \\"Custom message\\"
+      message: \\"Custom message\\",
     });
 
     expect(error).toMatchSnapshot();
@@ -1679,8 +1679,8 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     server.get(\\"/error\\", (_request, _response, _next) => {
       throw new DetailedError(\\"Detailed error message\\", {
         user: {
-          name: \\"Jack Daniels\\"
-        }
+          name: \\"Jack Daniels\\",
+        },
       });
     });
 
@@ -1718,7 +1718,7 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
   it(\\"provides generic method for rendering a simple error, one can provide custom title and message\\", async () => {
     const error = renderError({
       title: \\"Custom title\\",
-      message: \\"Custom message\\"
+      message: \\"Custom message\\",
     });
 
     expect(error).toMatchSnapshot();
@@ -1730,8 +1730,8 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     server.get(\\"/error\\", (_request, _response, _next) => {
       throw new DetailedError(\\"Detailed error message\\", {
         user: {
-          name: \\"Jack Daniels\\"
-        }
+          name: \\"Jack Daniels\\",
+        },
       });
     });
 
@@ -2283,7 +2283,7 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
   // forwards an error
   app.get(\\"/object-error\\", (_request, _response, next) => {
     next({
-      message: \\"Test message\\"
+      message: \\"Test message\\",
     });
   });
 
@@ -2811,7 +2811,7 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
   // forwards an error
   app.get(\\"/object-error\\", (_request, _response, next) => {
     next({
-      message: \\"Test message\\"
+      message: \\"Test message\\",
     });
   });
 

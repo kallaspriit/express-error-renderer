@@ -30,7 +30,7 @@ export default function expressErrorRenderer(userOptions: Partial<IOptions> = {}
   const options: IOptions = {
     basePath: path.join(__dirname, "..", ".."),
     showDetails: true,
-    ...userOptions
+    ...userOptions,
   };
 
   return (error: Error, request: Request, response: Response, _next: NextFunction) => {
@@ -50,8 +50,8 @@ export default function expressErrorRenderer(userOptions: Partial<IOptions> = {}
     if (!options.showDetails) {
       response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(
         renderError({
-          title: "Internal error occurred"
-        })
+          title: "Internal error occurred",
+        }),
       );
 
       return;
@@ -68,8 +68,8 @@ export default function expressErrorRenderer(userOptions: Partial<IOptions> = {}
         response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(
           renderError({
             title: "Internal error occurred",
-            message: `Also getting error callsites failed (${callsitesError.message})`
-          })
+            message: `Also getting error callsites failed (${callsitesError.message})`,
+          }),
         );
 
         return;
@@ -98,8 +98,8 @@ export default function expressErrorRenderer(userOptions: Partial<IOptions> = {}
           response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(
             renderError({
               title: "Internal error occurred",
-              message: `Also getting error callsites contexts failed (${contextsError.message})`
-            })
+              message: `Also getting error callsites contexts failed (${contextsError.message})`,
+            }),
           );
 
           return;
@@ -107,7 +107,7 @@ export default function expressErrorRenderer(userOptions: Partial<IOptions> = {}
 
         // render stack frames
         const renderedStackFrames = filteredCallsites.map((callsite, index) =>
-          renderStackFrame(index, callsite, options.basePath, contexts[index])
+          renderStackFrame(index, callsite, options.basePath, contexts[index]),
         );
 
         // send the error page response
@@ -126,11 +126,11 @@ export function formatXhrError(error: Error, options: IOptions): IJsonPayload {
     return {
       error: error.message,
       stack: typeof stack === "string" ? stack.split("\n").map(line => line.trim()) : [],
-      ...errorRest
+      ...errorRest,
     };
   } else {
     return {
-      error: "Internal error occurred"
+      error: "Internal error occurred",
     };
   }
 }
@@ -139,7 +139,7 @@ export function renderError(details: Partial<IErrorDetails> = {}) {
   const info: IErrorDetails = {
     title: "Error occurred",
     message: "The error has been logged and our engineers are looking into it, sorry about this.",
-    ...details
+    ...details,
   };
 
   return `
@@ -308,7 +308,7 @@ function renderStackFrame(
   index: number,
   callsite: stackman.ICallsite,
   basePath: string,
-  context?: stackman.ICallsiteContext
+  context?: stackman.ICallsiteContext,
 ): string {
   const filename = callsite.getFileName();
   const formattedFilename = formatFilename(basePath, filename);

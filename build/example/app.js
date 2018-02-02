@@ -33,7 +33,7 @@ function setupApp() {
         // forwards an error
         app.get("/object-error", (_request, _response, next) => {
             next({
-                message: "Test message"
+                message: "Test message",
             });
         });
         // render express errors, add this as the last middleware
@@ -51,7 +51,7 @@ function setupApp() {
                         payload: null,
                         success: false,
                         error: error.message,
-                        stack: typeof error.stack === "string" ? error.stack.split("\n").map(line => line.trim()) : []
+                        stack: typeof error.stack === "string" ? error.stack.split("\n").map(line => line.trim()) : [],
                     };
                 }
                 else {
@@ -59,10 +59,10 @@ function setupApp() {
                         // tslint:disable-next-line:no-null-keyword
                         payload: null,
                         success: false,
-                        error: "Internal error occurred"
+                        error: "Internal error occurred",
                     };
                 }
-            }
+            },
         }));
         return app;
     });

@@ -39,7 +39,6 @@
   },
   "homepage": "https://github.com/kallaspriit/express-error-renderer#readme",
   "dependencies": {
-    "@types/http-status-codes": "^1.2.0",
     "@types/supertest": "^2.0.3",
     "body-parser": "^1.18.2",
     "express": "^4.16.2",

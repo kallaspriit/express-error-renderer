@@ -28,7 +28,7 @@ export default async function setupApp(): Promise<express.Express> {
   // forwards an error
   app.get("/object-error", (_request, _response, next) => {
     next({
-      message: "Test message"
+      message: "Test message",
     });
   });
 
@@ -50,18 +50,18 @@ export default async function setupApp(): Promise<express.Express> {
             payload: null,
             success: false,
             error: error.message,
-            stack: typeof error.stack === "string" ? error.stack.split("\n").map(line => line.trim()) : []
+            stack: typeof error.stack === "string" ? error.stack.split("\n").map(line => line.trim()) : [],
           };
         } else {
           return {
             // tslint:disable-next-line:no-null-keyword
             payload: null,
             success: false,
-            error: "Internal error occurred"
+            error: "Internal error occurred",
           };
         }
-      }
-    })
+      },
+    }),
   );
 
   return app;

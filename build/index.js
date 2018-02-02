@@ -28,7 +28,7 @@ function expressErrorRenderer(userOptions = {}) {
         // show simple error view if details are disabled
         if (!options.showDetails) {
             response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(renderError({
-                title: "Internal error occurred"
+                title: "Internal error occurred",
             }));
             return;
         }
@@ -41,7 +41,7 @@ function expressErrorRenderer(userOptions = {}) {
             if (callsitesError) {
                 response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(renderError({
                     title: "Internal error occurred",
-                    message: `Also getting error callsites failed (${callsitesError.message})`
+                    message: `Also getting error callsites failed (${callsitesError.message})`,
                 }));
                 return;
             }
@@ -64,7 +64,7 @@ function expressErrorRenderer(userOptions = {}) {
                     // getting source contexts failed for some reason, show simple error
                     response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(renderError({
                         title: "Internal error occurred",
-                        message: `Also getting error callsites contexts failed (${contextsError.message})`
+                        message: `Also getting error callsites contexts failed (${contextsError.message})`,
                     }));
                     return;
                 }
@@ -86,7 +86,7 @@ function formatXhrError(error, options) {
     }
     else {
         return {
-            error: "Internal error occurred"
+            error: "Internal error occurred",
         };
     }
 }

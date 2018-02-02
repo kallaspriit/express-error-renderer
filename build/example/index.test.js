@@ -69,7 +69,7 @@ describe("create-user-route", () => {
             throw new Error("Error message");
         });
         server.use(index_1.default({
-            showDetails: false
+            showDetails: false,
         }));
         app = supertest(server);
         const response = yield app.get("/error");
@@ -98,7 +98,7 @@ describe("create-user-route", () => {
             throw new Error("Error message");
         });
         server.use(index_1.default({
-            showDetails: false
+            showDetails: false,
         }));
         app = supertest(server);
         const response = yield app
@@ -116,7 +116,7 @@ describe("create-user-route", () => {
     it("provides generic method for rendering a simple error, one can provide custom title and message", () => __awaiter(this, void 0, void 0, function* () {
         const error = index_1.renderError({
             title: "Custom title",
-            message: "Custom message"
+            message: "Custom message",
         });
         expect(error).toMatchSnapshot();
     }));
@@ -125,8 +125,8 @@ describe("create-user-route", () => {
         server.get("/error", (_request, _response, _next) => {
             throw new DetailedError("Detailed error message", {
                 user: {
-                    name: "Jack Daniels"
-                }
+                    name: "Jack Daniels",
+                },
             });
         });
         server.use(index_1.default());
@@ -139,10 +139,10 @@ describe("create-user-route", () => {
     it("xhr error formatter accepts error without stack", () => __awaiter(this, void 0, void 0, function* () {
         const error = index_1.formatXhrError({
             name: "Error",
-            message: "Error message"
+            message: "Error message",
         }, {
             basePath: "",
-            showDetails: true
+            showDetails: true,
         });
         expect(error).toMatchSnapshot();
     }));
@@ -163,7 +163,7 @@ describe("create-user-route", () => {
         const server = express();
         server.get("/error", (_request, _response, _next) => {
             throw {
-                message: "Error message"
+                message: "Error message",
             };
         });
         server.use(index_1.default());

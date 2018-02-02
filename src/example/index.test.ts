@@ -83,8 +83,8 @@ describe("create-user-route", () => {
 
     server.use(
       expressErrorRenderer({
-        showDetails: false
-      })
+        showDetails: false,
+      }),
     );
 
     app = supertest(server);
@@ -124,8 +124,8 @@ describe("create-user-route", () => {
 
     server.use(
       expressErrorRenderer({
-        showDetails: false
-      })
+        showDetails: false,
+      }),
     );
 
     app = supertest(server);
@@ -148,7 +148,7 @@ describe("create-user-route", () => {
   it("provides generic method for rendering a simple error, one can provide custom title and message", async () => {
     const error = renderError({
       title: "Custom title",
-      message: "Custom message"
+      message: "Custom message",
     });
 
     expect(error).toMatchSnapshot();
@@ -160,8 +160,8 @@ describe("create-user-route", () => {
     server.get("/error", (_request, _response, _next) => {
       throw new DetailedError("Detailed error message", {
         user: {
-          name: "Jack Daniels"
-        }
+          name: "Jack Daniels",
+        },
       });
     });
 
@@ -179,12 +179,12 @@ describe("create-user-route", () => {
     const error = formatXhrError(
       {
         name: "Error",
-        message: "Error message"
+        message: "Error message",
       },
       {
         basePath: "",
-        showDetails: true
-      }
+        showDetails: true,
+      },
     );
 
     expect(error).toMatchSnapshot();
@@ -213,7 +213,7 @@ describe("create-user-route", () => {
 
     server.get("/error", (_request, _response, _next) => {
       throw {
-        message: "Error message"
+        message: "Error message",
       };
     });
 
