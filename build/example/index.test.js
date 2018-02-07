@@ -42,6 +42,11 @@ describe("create-user-route", () => {
         expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
         expect(response.text).toMatchSnapshot();
     }));
+    it("should handle cyclic errors", () => __awaiter(this, void 0, void 0, function* () {
+        const response = yield app.get("/cyclic-error");
+        expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+        expect(response.text).toMatchSnapshot();
+    }));
     it("should return error info as json if requested with XHR", () => __awaiter(this, void 0, void 0, function* () {
         const response = yield app
             .get("/throw-error")
@@ -69,7 +74,7 @@ describe("create-user-route", () => {
             throw new Error("Error message");
         });
         server.use(index_1.default({
-            showDetails: false,
+            debug: false,
         }));
         app = supertest(server);
         const response = yield app.get("/error");
@@ -98,7 +103,7 @@ describe("create-user-route", () => {
             throw new Error("Error message");
         });
         server.use(index_1.default({
-            showDetails: false,
+            debug: false,
         }));
         app = supertest(server);
         const response = yield app
@@ -108,17 +113,6 @@ describe("create-user-route", () => {
         expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
         expect(response.body.error).toEqual("Internal error occurred");
         expect(response.body.stack).toBeUndefined();
-    }));
-    it("provides generic method for rendering a simple error with default title and message", () => __awaiter(this, void 0, void 0, function* () {
-        const error = index_1.renderError();
-        expect(error).toMatchSnapshot();
-    }));
-    it("provides generic method for rendering a simple error, one can provide custom title and message", () => __awaiter(this, void 0, void 0, function* () {
-        const error = index_1.renderError({
-            title: "Custom title",
-            message: "Custom message",
-        });
-        expect(error).toMatchSnapshot();
     }));
     it("error can include additional information", () => __awaiter(this, void 0, void 0, function* () {
         const server = express();
@@ -142,7 +136,8 @@ describe("create-user-route", () => {
             message: "Error message",
         }, {
             basePath: "",
-            showDetails: true,
+            debug: true,
+            showMessage: true,
         });
         expect(error).toMatchSnapshot();
     }));

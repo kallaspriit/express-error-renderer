@@ -2,11 +2,12 @@
 import { ErrorRequestHandler } from "express";
 export declare type FormatXhrErrorFn = (error: Error, options: IOptions) => IJsonPayload;
 export interface IJsonPayload {
-    [x: string]: string | string[] | number | boolean | null;
+    [x: string]: string | string[] | number | boolean | null | undefined;
 }
 export interface IOptions {
     basePath: string;
-    showDetails: boolean;
+    debug: boolean;
+    showMessage: boolean;
     formatXhrError?: FormatXhrErrorFn;
 }
 export interface IErrorDetails {
@@ -18,4 +19,3 @@ export interface IErrorRest {
 }
 export default function expressErrorRenderer(userOptions?: Partial<IOptions>): ErrorRequestHandler;
 export declare function formatXhrError(error: Error, options: IOptions): IJsonPayload;
-export declare function renderError(details?: Partial<IErrorDetails>): string;

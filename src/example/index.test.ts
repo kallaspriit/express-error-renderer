@@ -1,7 +1,7 @@
 import * as express from "express";
 import * as HttpStatus from "http-status-codes";
 import * as supertest from "supertest";
-import expressErrorRenderer, { formatXhrError, renderError } from "../index";
+import expressErrorRenderer, { formatXhrError } from "../index";
 import setupApp from "./app";
 
 let app: supertest.SuperTest<supertest.Test>;
@@ -46,6 +46,13 @@ describe("create-user-route", () => {
     expect(response.text).toMatchSnapshot();
   });
 
+  it("should handle cyclic errors", async () => {
+    const response = await app.get("/cyclic-error");
+
+    expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(response.text).toMatchSnapshot();
+  });
+
   it("should return error info as json if requested with XHR", async () => {
     const response = await app
       .get("/throw-error")
@@ -83,7 +90,7 @@ describe("create-user-route", () => {
 
     server.use(
       expressErrorRenderer({
-        showDetails: false,
+        debug: false,
       }),
     );
 
@@ -124,7 +131,7 @@ describe("create-user-route", () => {
 
     server.use(
       expressErrorRenderer({
-        showDetails: false,
+        debug: false,
       }),
     );
 
@@ -137,21 +144,6 @@ describe("create-user-route", () => {
     expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
     expect(response.body.error).toEqual("Internal error occurred");
     expect(response.body.stack).toBeUndefined();
-  });
-
-  it("provides generic method for rendering a simple error with default title and message", async () => {
-    const error = renderError();
-
-    expect(error).toMatchSnapshot();
-  });
-
-  it("provides generic method for rendering a simple error, one can provide custom title and message", async () => {
-    const error = renderError({
-      title: "Custom title",
-      message: "Custom message",
-    });
-
-    expect(error).toMatchSnapshot();
   });
 
   it("error can include additional information", async () => {
@@ -183,7 +175,8 @@ describe("create-user-route", () => {
       },
       {
         basePath: "",
-        showDetails: true,
+        debug: true,
+        showMessage: true,
       },
     );
 

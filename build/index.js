@@ -14,7 +14,7 @@ const HttpStatus = require("http-status-codes");
 const path = require("path");
 const stackman = require("stackman");
 function expressErrorRenderer(userOptions = {}) {
-    const options = Object.assign({ basePath: path.join(__dirname, "..", ".."), showDetails: true }, userOptions);
+    const options = Object.assign({ basePath: path.join(__dirname, "..", ".."), debug: true, showMessage: true }, userOptions);
     return (error, request, response, _next) => {
         // respond to xhr requests with json (true if X-Requested-With header equals XMLHttpRequest)
         if (request.xhr) {
@@ -26,10 +26,10 @@ function expressErrorRenderer(userOptions = {}) {
             return;
         }
         // show simple error view if details are disabled
-        if (!options.showDetails) {
-            response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(renderError({
-                title: "Internal error occurred",
-            }));
+        if (!options.debug) {
+            response
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .send(options.showMessage ? error.message : "Internal error occurred");
             return;
         }
         // using stackman for getting details stack traces
@@ -39,10 +39,9 @@ function expressErrorRenderer(userOptions = {}) {
             // handle callsites failure
             // tslint:disable-next-line:strict-boolean-expressions
             if (callsitesError) {
-                response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(renderError({
-                    title: "Internal error occurred",
-                    message: `Also getting error callsites failed (${callsitesError.message})`,
-                }));
+                response
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .send(options.showMessage ? error.message : "Internal error occurred");
                 return;
             }
             // ignore files in node_modules
@@ -62,10 +61,9 @@ function expressErrorRenderer(userOptions = {}) {
                 // tslint:disable-next-line:strict-boolean-expressions
                 if (contextsError) {
                     // getting source contexts failed for some reason, show simple error
-                    response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(renderError({
-                        title: "Internal error occurred",
-                        message: `Also getting error callsites contexts failed (${contextsError.message})`,
-                    }));
+                    response
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .send(options.showMessage ? error.message : "Internal error occurred");
                     return;
                 }
                 // render stack frames
@@ -80,7 +78,7 @@ function expressErrorRenderer(userOptions = {}) {
 }
 exports.default = expressErrorRenderer;
 function formatXhrError(error, options) {
-    if (options.showDetails) {
+    if (options.debug) {
         const { name, message, stack } = error, errorRest = __rest(error, ["name", "message", "stack"]);
         return Object.assign({ error: error.message, stack: typeof stack === "string" ? stack.split("\n").map(line => line.trim()) : [] }, errorRest);
     }
@@ -91,45 +89,6 @@ function formatXhrError(error, options) {
     }
 }
 exports.formatXhrError = formatXhrError;
-function renderError(details = {}) {
-    const info = Object.assign({ title: "Error occurred", message: "The error has been logged and our engineers are looking into it, sorry about this." }, details);
-    return `
-    <html>
-    <head>
-      <meta charset="utf-8"/>
-      <title>Error</title>
-      <style>
-        body {
-          background-color: #252526;
-          color: #FFF;
-          margin: 0;
-          padding: 20px;
-        }
-        a {
-          color: #FFF;
-        }
-        .error-message {
-          padding: 20px;
-          margin-bottom: 20px;
-          background-color: #900;
-          border-radius: 5px;
-        }
-      </style>
-    </head>
-    <body>
-      <h1>${info.title}</h1>
-      <p>
-        <div class="error-message">${info.message}</div>
-      </p>
-      <p>
-        <a href="/">Navigate to index</a> |
-        <a href="javascript: window.location.reload()">Attempt to reload page</a>
-      </p>
-    </body>
-    </html>
-  `;
-}
-exports.renderError = renderError;
 function isProjectTrace(basePath, line) {
     return line.indexOf(basePath) !== -1 && line.indexOf("node_modules") === -1;
 }

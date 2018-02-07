@@ -7,12 +7,13 @@ import * as stackman from "stackman";
 export type FormatXhrErrorFn = (error: Error, options: IOptions) => IJsonPayload;
 
 export interface IJsonPayload {
-  [x: string]: string | string[] | number | boolean | null;
+  [x: string]: string | string[] | number | boolean | null | undefined;
 }
 
 export interface IOptions {
   basePath: string;
-  showDetails: boolean;
+  debug: boolean;
+  showMessage: boolean;
   formatXhrError?: FormatXhrErrorFn;
 }
 
@@ -29,7 +30,8 @@ export interface IErrorRest {
 export default function expressErrorRenderer(userOptions: Partial<IOptions> = {}): ErrorRequestHandler {
   const options: IOptions = {
     basePath: path.join(__dirname, "..", ".."),
-    showDetails: true,
+    debug: true,
+    showMessage: true,
     ...userOptions,
   };
 
@@ -47,12 +49,10 @@ export default function expressErrorRenderer(userOptions: Partial<IOptions> = {}
     }
 
     // show simple error view if details are disabled
-    if (!options.showDetails) {
-      response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(
-        renderError({
-          title: "Internal error occurred",
-        }),
-      );
+    if (!options.debug) {
+      response
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .send(options.showMessage ? error.message : "Internal error occurred");
 
       return;
     }
@@ -65,12 +65,9 @@ export default function expressErrorRenderer(userOptions: Partial<IOptions> = {}
       // handle callsites failure
       // tslint:disable-next-line:strict-boolean-expressions
       if (callsitesError) {
-        response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(
-          renderError({
-            title: "Internal error occurred",
-            message: `Also getting error callsites failed (${callsitesError.message})`,
-          }),
-        );
+        response
+          .status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .send(options.showMessage ? error.message : "Internal error occurred");
 
         return;
       }
@@ -95,12 +92,9 @@ export default function expressErrorRenderer(userOptions: Partial<IOptions> = {}
         // tslint:disable-next-line:strict-boolean-expressions
         if (contextsError) {
           // getting source contexts failed for some reason, show simple error
-          response.status(HttpStatus.INTERNAL_SERVER_ERROR).send(
-            renderError({
-              title: "Internal error occurred",
-              message: `Also getting error callsites contexts failed (${contextsError.message})`,
-            }),
-          );
+          response
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .send(options.showMessage ? error.message : "Internal error occurred");
 
           return;
         }
@@ -120,7 +114,7 @@ export default function expressErrorRenderer(userOptions: Partial<IOptions> = {}
 }
 
 export function formatXhrError(error: Error, options: IOptions): IJsonPayload {
-  if (options.showDetails) {
+  if (options.debug) {
     const { name, message, stack, ...errorRest } = error;
 
     return {
@@ -133,50 +127,6 @@ export function formatXhrError(error: Error, options: IOptions): IJsonPayload {
       error: "Internal error occurred",
     };
   }
-}
-
-export function renderError(details: Partial<IErrorDetails> = {}) {
-  const info: IErrorDetails = {
-    title: "Error occurred",
-    message: "The error has been logged and our engineers are looking into it, sorry about this.",
-    ...details,
-  };
-
-  return `
-    <html>
-    <head>
-      <meta charset="utf-8"/>
-      <title>Error</title>
-      <style>
-        body {
-          background-color: #252526;
-          color: #FFF;
-          margin: 0;
-          padding: 20px;
-        }
-        a {
-          color: #FFF;
-        }
-        .error-message {
-          padding: 20px;
-          margin-bottom: 20px;
-          background-color: #900;
-          border-radius: 5px;
-        }
-      </style>
-    </head>
-    <body>
-      <h1>${info.title}</h1>
-      <p>
-        <div class="error-message">${info.message}</div>
-      </p>
-      <p>
-        <a href="/">Navigate to index</a> |
-        <a href="javascript: window.location.reload()">Attempt to reload page</a>
-      </p>
-    </body>
-    </html>
-  `;
 }
 
 function isProjectTrace(basePath: string, line: string) {

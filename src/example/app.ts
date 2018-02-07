@@ -3,6 +3,20 @@ import * as express from "express";
 import * as path from "path";
 import expressErrorRenderer from "../";
 
+export interface IErrorDetails {
+  // tslint:disable-next-line:no-any
+  [x: string]: any;
+}
+
+export class DetailedError extends Error {
+  // tslint:disable-next-line:no-null-keyword
+  public constructor(message: string, public details?: IErrorDetails) {
+    super(message);
+
+    this.name = "DetailedError";
+  }
+}
+
 export default async function setupApp(): Promise<express.Express> {
   // create a new express app
   const app = express();
@@ -12,7 +26,15 @@ export default async function setupApp(): Promise<express.Express> {
 
   // index endpoint
   app.get("/", (_request, response, _next) => {
-    response.send("Hello!");
+    response.send(`
+      <ul>
+        <li><a href="/throw-error">Throw error</a></li>
+        <li><a href="/next-error">Next error</a></li>
+        <li><a href="/object-error">Object error</a></li>
+        <li><a href="/detailed-error">Detailed error</a></li>
+        <li><a href="/cyclic-error">Cyclic error</a></li>
+      </ul>
+    `);
   });
 
   // throws an error
@@ -25,11 +47,33 @@ export default async function setupApp(): Promise<express.Express> {
     next(new Error("Forwarded error message"));
   });
 
-  // forwards an error
+  // object error
   app.get("/object-error", (_request, _response, next) => {
     next({
       message: "Test message",
     });
+  });
+
+  // detailed error
+  app.get("/detailed-error", (_request, _response, next) => {
+    next(
+      new DetailedError("Cyclic error", {
+        foo: "bar",
+      }),
+    );
+  });
+
+  // error contains cyclic data
+  app.get("/cyclic-error", (_request, _response, next) => {
+    const a: { [x: string]: any } = { child: null };
+    const b = { child: a };
+    a.child = b;
+
+    next(
+      new DetailedError("Cyclic error", {
+        a,
+      }),
+    );
   });
 
   // render express errors, add this as the last middleware
@@ -38,13 +82,16 @@ export default async function setupApp(): Promise<express.Express> {
       // application base path, used to decide which stack frames to include and for formatting the error source location
       basePath: path.join(__dirname, "..", ".."),
 
-      // showing details should probably be disabled for production sites
-      showDetails: true,
+      // should error details and stack traces be shown
+      debug: true,
+
+      // will the error message be displayed in non-debug mode
+      showMessage: true,
 
       // returns JSON payload for XHR requests, configure the output here
       formatXhrError: (error, options) => {
         // only show actual error message and stack trace if showing details is enabled
-        if (options.showDetails) {
+        if (options.debug) {
           return {
             // tslint:disable-next-line:no-null-keyword
             payload: null,

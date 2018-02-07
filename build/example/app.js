@@ -12,6 +12,15 @@ const bodyParser = require("body-parser");
 const express = require("express");
 const path = require("path");
 const _1 = require("../");
+class DetailedError extends Error {
+    // tslint:disable-next-line:no-null-keyword
+    constructor(message, details) {
+        super(message);
+        this.details = details;
+        this.name = "DetailedError";
+    }
+}
+exports.DetailedError = DetailedError;
 function setupApp() {
     return __awaiter(this, void 0, void 0, function* () {
         // create a new express app
@@ -20,7 +29,15 @@ function setupApp() {
         app.use(bodyParser.json());
         // index endpoint
         app.get("/", (_request, response, _next) => {
-            response.send("Hello!");
+            response.send(`
+      <ul>
+        <li><a href="/throw-error">Throw error</a></li>
+        <li><a href="/next-error">Next error</a></li>
+        <li><a href="/object-error">Object error</a></li>
+        <li><a href="/detailed-error">Detailed error</a></li>
+        <li><a href="/cyclic-error">Cyclic error</a></li>
+      </ul>
+    `);
         });
         // throws an error
         app.get("/throw-error", (_request, _response, _next) => {
@@ -30,22 +47,39 @@ function setupApp() {
         app.get("/next-error", (_request, _response, next) => {
             next(new Error("Forwarded error message"));
         });
-        // forwards an error
+        // object error
         app.get("/object-error", (_request, _response, next) => {
             next({
                 message: "Test message",
             });
         });
+        // detailed error
+        app.get("/detailed-error", (_request, _response, next) => {
+            next(new DetailedError("Cyclic error", {
+                foo: "bar",
+            }));
+        });
+        // error contains cyclic data
+        app.get("/cyclic-error", (_request, _response, next) => {
+            const a = { child: null };
+            const b = { child: a };
+            a.child = b;
+            next(new DetailedError("Cyclic error", {
+                a,
+            }));
+        });
         // render express errors, add this as the last middleware
         app.use(_1.default({
             // application base path, used to decide which stack frames to include and for formatting the error source location
             basePath: path.join(__dirname, "..", ".."),
-            // showing details should probably be disabled for production sites
-            showDetails: true,
+            // should error details and stack traces be shown
+            debug: true,
+            // will the error message be displayed in non-debug mode
+            showMessage: true,
             // returns JSON payload for XHR requests, configure the output here
             formatXhrError: (error, options) => {
                 // only show actual error message and stack trace if showing details is enabled
-                if (options.showDetails) {
+                if (options.debug) {
                     return {
                         // tslint:disable-next-line:no-null-keyword
                         payload: null,
