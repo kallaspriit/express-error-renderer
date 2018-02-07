@@ -2099,7 +2099,7 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <ol class=\\"stack-trace\\">
       
     <li>
-      <span class=\\"stack-line__source\\">src/example/app.ts:70</span>
+      <span class=\\"stack-line__source\\">src/example/app.ts:73</span>
       <span class=\\"stack-line__method\\">(app.get)</span>
     </li>
   
@@ -2127,22 +2127,25 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
 
   // detailed error
   app.get(\\"/detailed-error\\", (_request, _response, next) => {
-    next(new DetailedError(\\"Cyclic error\\", {
-      foo: \\"bar\\"
-    }));
+    next(
+      new DetailedError(\\"Cyclic error\\", {
+        foo: \\"bar\\",
+      }),
+    );
   });
 
   // error contains cyclic data
   app.get(\\"/cyclic-error\\", (_request, _response, next) => {
-    const a: {[x: string]: any} = {child: null};
-    const b = {child: a};
+    const a: { [x: string]: any } = { child: null };
+    const b = { child: a };
     a.child = b;
 
-    next(new DetailedError(\\"Cyclic error\\", {
-      a
-    }));
+    next(
+      new DetailedError(\\"Cyclic error\\", {
+        a,
+      }),
+    );
   });
-
 
   // render express errors, add this as the last middleware
   app.use(
@@ -2152,9 +2155,6 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
 
       // should error details and stack traces be shown
       debug: true,
-
-      // will the error message be displayed in non-debug mode
-      showMessage: true,
 </code></pre>
   
     </div>
@@ -2670,16 +2670,16 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
 
   // detailed error
   app.get(\\"/detailed-error\\", (_request, _response, next) => {
-    next(new DetailedError(\\"Cyclic error\\", {
-      foo: \\"bar\\"
-    }));
+    next(
+      new DetailedError(\\"Cyclic error\\", {
+        foo: \\"bar\\",
+      }),
+    );
   });
 
   // error contains cyclic data
   app.get(\\"/cyclic-error\\", (_request, _response, next) => {
-    const a: {[x: string]: any} = {child: null};
-    const b = {child: a};
-    a.child = b;</code></pre>
+    const a: { [x: string]: any } = { child: null };</code></pre>
   
     </div>
   
@@ -3198,12 +3198,12 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
 
   // detailed error
   app.get(\\"/detailed-error\\", (_request, _response, next) => {
-    next(new DetailedError(\\"Cyclic error\\", {
-      foo: \\"bar\\"
-    }));
-  });
-
-  // error contains cyclic data</code></pre>
+    next(
+      new DetailedError(\\"Cyclic error\\", {
+        foo: \\"bar\\",
+      }),
+    );
+  });</code></pre>
   
     </div>
   
