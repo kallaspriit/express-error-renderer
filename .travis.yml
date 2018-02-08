@@ -11,6 +11,6 @@ branches:
     - master
 script:
   - yarn build
-  - yarn test
+  - yarn coverage
 after_success:
   - yarn coveralls

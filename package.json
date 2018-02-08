@@ -20,8 +20,7 @@
     "test": "jest",
     "test-watch": "jest --watch --collectCoverage",
     "coverage": "yarn tidy:coverage && jest --collectCoverage",
-    "coverage-ci": "yarn tidy:coverage && jest --collectCoverage --runInBand",
-    "codecov": "codecov -f coverage/coverage-final.json",
+    "coveralls": "cat ./coverage/lcov.info | coveralls",
     "cleanup": "ts-node src/scripts/cleanup",
     "precommit": "yarn prettier && yarn build && yarn lint-fix && git add -A"
   },
@@ -29,15 +28,7 @@
     "type": "git",
     "url": "https://github.com/kallaspriit/express-error-renderer.git"
   },
-  "keywords": [
-    "express",
-    "error",
-    "renderer",
-    "pretty",
-    "stack",
-    "trace",
-    "sourcemap"
-  ],
+  "keywords": ["express", "error", "renderer", "pretty", "stack", "trace", "sourcemap"],
   "author": "Priit Kallas <kallaspriit@gmail.com>",
   "license": "MIT",
   "bugs": {
@@ -73,23 +64,12 @@
     "transform": {
       "^.+\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
-    "roots": [
-      "src"
-    ],
+    "roots": ["src"],
     "mapCoverage": true,
     "collectCoverage": false,
-    "collectCoverageFrom": [
-      "**/src/index.ts",
-      "**/routes/**/*.ts",
-      "!**/routes/index-route.ts"
-    ],
+    "collectCoverageFrom": ["**/src/index.ts", "**/routes/**/*.ts", "!**/routes/index-route.ts"],
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "json"
-    ]
+    "moduleFileExtensions": ["ts", "tsx", "js", "json"]
   },
   "config": {
     "ghooks": {
