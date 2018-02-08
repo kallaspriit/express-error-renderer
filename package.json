@@ -1,6 +1,6 @@
 {
   "name": "express-error-renderer",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "description": "Middleware for rendering express errors with error details, source-mapped stack traces.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -28,7 +28,15 @@
     "type": "git",
     "url": "https://github.com/kallaspriit/express-error-renderer.git"
   },
-  "keywords": ["express", "error", "renderer", "pretty", "stack", "trace", "sourcemap"],
+  "keywords": [
+    "express",
+    "error",
+    "renderer",
+    "pretty",
+    "stack",
+    "trace",
+    "sourcemap"
+  ],
   "author": "Priit Kallas <kallaspriit@gmail.com>",
   "license": "MIT",
   "bugs": {
@@ -64,12 +72,23 @@
     "transform": {
       "^.+\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
-    "roots": ["src"],
+    "roots": [
+      "src"
+    ],
     "mapCoverage": true,
     "collectCoverage": false,
-    "collectCoverageFrom": ["**/src/index.ts", "**/routes/**/*.ts", "!**/routes/index-route.ts"],
+    "collectCoverageFrom": [
+      "**/src/index.ts",
+      "**/routes/**/*.ts",
+      "!**/routes/index-route.ts"
+    ],
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx)$",
-    "moduleFileExtensions": ["ts", "tsx", "js", "json"]
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json"
+    ]
   },
   "config": {
     "ghooks": {
