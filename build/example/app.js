@@ -21,7 +21,7 @@ class DetailedError extends Error {
     }
 }
 exports.DetailedError = DetailedError;
-function setupApp() {
+function setupApp(userOptions = {}) {
     return __awaiter(this, void 0, void 0, function* () {
         // create a new express app
         const app = express();
@@ -69,13 +69,13 @@ function setupApp() {
             }));
         });
         // render express errors, add this as the last middleware
-        app.use(_1.default({
+        app.use(_1.default(Object.assign({ 
             // application base path, used to decide which stack frames to include and for formatting the error source location
-            basePath: path.join(__dirname, "..", ".."),
+            basePath: path.join(__dirname, "..", ".."), 
             // should error details and stack traces be shown
-            debug: true,
+            debug: true, 
             // will the error message be displayed in non-debug mode
-            showMessage: true,
+            showMessage: true, 
             // returns JSON payload for XHR requests, configure the output here
             formatXhrError: (error, options) => {
                 // only show actual error message and stack trace if showing details is enabled
@@ -96,8 +96,7 @@ function setupApp() {
                         error: "Internal error occurred",
                     };
                 }
-            },
-        }));
+            } }, userOptions)));
         return app;
     });
 }

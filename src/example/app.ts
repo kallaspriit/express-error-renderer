@@ -1,7 +1,7 @@
 import * as bodyParser from "body-parser";
 import * as express from "express";
 import * as path from "path";
-import expressErrorRenderer from "../";
+import expressErrorRenderer, { IOptions } from "../";
 
 export interface IErrorDetails {
   // tslint:disable-next-line:no-any
@@ -17,7 +17,7 @@ export class DetailedError extends Error {
   }
 }
 
-export default async function setupApp(): Promise<express.Express> {
+export default async function setupApp(userOptions: Partial<IOptions> = {}): Promise<express.Express> {
   // create a new express app
   const app = express();
 
@@ -108,6 +108,9 @@ export default async function setupApp(): Promise<express.Express> {
           };
         }
       },
+
+      // allow overriding defaults
+      ...userOptions,
     }),
   );
 

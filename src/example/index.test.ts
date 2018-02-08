@@ -4,8 +4,6 @@ import * as supertest from "supertest";
 import expressErrorRenderer, { formatXhrError } from "../index";
 import setupApp from "./app";
 
-let app: supertest.SuperTest<supertest.Test>;
-
 export interface IErrorDetails {
   // tslint:disable-next-line:no-any
   [x: string]: any;
@@ -21,11 +19,8 @@ export class DetailedError extends Error {
 }
 
 describe("create-user-route", () => {
-  beforeEach(async () => {
-    app = supertest(await setupApp());
-  });
-
   it("should return valid index endpoint result", async () => {
+    const app = supertest(await setupApp());
     const response = await app.get("/");
 
     expect(response.status).toEqual(HttpStatus.OK);
@@ -33,6 +28,7 @@ describe("create-user-route", () => {
   });
 
   it("should render thrown error", async () => {
+    const app = supertest(await setupApp());
     const response = await app.get("/throw-error");
 
     expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -40,6 +36,7 @@ describe("create-user-route", () => {
   });
 
   it("should render forwarded error", async () => {
+    const app = supertest(await setupApp());
     const response = await app.get("/next-error");
 
     expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -47,6 +44,7 @@ describe("create-user-route", () => {
   });
 
   it("should handle cyclic errors", async () => {
+    const app = supertest(await setupApp());
     const response = await app.get("/cyclic-error");
 
     expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -54,6 +52,7 @@ describe("create-user-route", () => {
   });
 
   it("should return error info as json if requested with XHR", async () => {
+    const app = supertest(await setupApp());
     const response = await app
       .get("/throw-error")
       .set("X-Requested-With", "XMLHttpRequest")
@@ -74,7 +73,7 @@ describe("create-user-route", () => {
 
     server.use(expressErrorRenderer());
 
-    app = supertest(server);
+    const app = supertest(server);
     const response = await app.get("/error");
 
     expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -94,7 +93,7 @@ describe("create-user-route", () => {
       }),
     );
 
-    app = supertest(server);
+    const app = supertest(server);
     const response = await app.get("/error");
 
     expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -110,7 +109,7 @@ describe("create-user-route", () => {
 
     server.use(expressErrorRenderer());
 
-    app = supertest(server);
+    const app = supertest(server);
     const response = await app
       .get("/error")
       .set("X-Requested-With", "XMLHttpRequest")
@@ -135,7 +134,7 @@ describe("create-user-route", () => {
       }),
     );
 
-    app = supertest(server);
+    const app = supertest(server);
     const response = await app
       .get("/error")
       .set("X-Requested-With", "XMLHttpRequest")
@@ -159,11 +158,53 @@ describe("create-user-route", () => {
 
     server.use(expressErrorRenderer());
 
-    app = supertest(server);
+    const app = supertest(server);
     const response = await app.get("/error");
 
     expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
     expect(response.text).toContain("Jack Daniels");
+    expect(response.text).toMatchSnapshot();
+  });
+
+  it("can be configured to show message", async () => {
+    const server = express();
+
+    server.get("/error", (_request, _response, _next) => {
+      throw new Error("Test error");
+    });
+
+    server.use(
+      expressErrorRenderer({
+        debug: false,
+        showMessage: true,
+      }),
+    );
+
+    const app = supertest(server);
+    const response = await app.get("/error");
+
+    expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(response.text).toMatchSnapshot();
+  });
+
+  it("can be configured not to show message", async () => {
+    const server = express();
+
+    server.get("/error", (_request, _response, _next) => {
+      throw new Error("Test error");
+    });
+
+    server.use(
+      expressErrorRenderer({
+        debug: false,
+        showMessage: false,
+      }),
+    );
+
+    const app = supertest(server);
+    const response = await app.get("/error");
+
+    expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
     expect(response.text).toMatchSnapshot();
   });
 
@@ -194,7 +235,7 @@ describe("create-user-route", () => {
 
     server.use(expressErrorRenderer());
 
-    app = supertest(server);
+    const app = supertest(server);
     const response = await app.get("/error");
 
     expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -212,7 +253,29 @@ describe("create-user-route", () => {
 
     server.use(expressErrorRenderer());
 
-    app = supertest(server);
+    const app = supertest(server);
+    const response = await app.get("/error");
+
+    expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(response.text).toMatchSnapshot();
+  });
+
+  it("renders errors without trace hiding message", async () => {
+    const server = express();
+
+    server.get("/error", (_request, _response, _next) => {
+      // tslint:disable-next-line:no-string-throw
+      throw "foo";
+    });
+
+    server.use(
+      expressErrorRenderer({
+        debug: true,
+        showMessage: false,
+      }),
+    );
+
+    const app = supertest(server);
     const response = await app.get("/error");
 
     expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);

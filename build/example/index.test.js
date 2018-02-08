@@ -13,7 +13,6 @@ const HttpStatus = require("http-status-codes");
 const supertest = require("supertest");
 const index_1 = require("../index");
 const app_1 = require("./app");
-let app;
 class DetailedError extends Error {
     // tslint:disable-next-line:no-null-keyword
     constructor(message, details) {
@@ -24,30 +23,32 @@ class DetailedError extends Error {
 }
 exports.DetailedError = DetailedError;
 describe("create-user-route", () => {
-    beforeEach(() => __awaiter(this, void 0, void 0, function* () {
-        app = supertest(yield app_1.default());
-    }));
     it("should return valid index endpoint result", () => __awaiter(this, void 0, void 0, function* () {
+        const app = supertest(yield app_1.default());
         const response = yield app.get("/");
         expect(response.status).toEqual(HttpStatus.OK);
         expect(response.text).toMatchSnapshot();
     }));
     it("should render thrown error", () => __awaiter(this, void 0, void 0, function* () {
+        const app = supertest(yield app_1.default());
         const response = yield app.get("/throw-error");
         expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
         expect(response.text).toMatchSnapshot();
     }));
     it("should render forwarded error", () => __awaiter(this, void 0, void 0, function* () {
+        const app = supertest(yield app_1.default());
         const response = yield app.get("/next-error");
         expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
         expect(response.text).toMatchSnapshot();
     }));
     it("should handle cyclic errors", () => __awaiter(this, void 0, void 0, function* () {
+        const app = supertest(yield app_1.default());
         const response = yield app.get("/cyclic-error");
         expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
         expect(response.text).toMatchSnapshot();
     }));
     it("should return error info as json if requested with XHR", () => __awaiter(this, void 0, void 0, function* () {
+        const app = supertest(yield app_1.default());
         const response = yield app
             .get("/throw-error")
             .set("X-Requested-With", "XMLHttpRequest")
@@ -63,7 +64,7 @@ describe("create-user-route", () => {
             throw new Error("Error message");
         });
         server.use(index_1.default());
-        app = supertest(server);
+        const app = supertest(server);
         const response = yield app.get("/error");
         expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
         expect(response.text).toMatchSnapshot();
@@ -76,7 +77,7 @@ describe("create-user-route", () => {
         server.use(index_1.default({
             debug: false,
         }));
-        app = supertest(server);
+        const app = supertest(server);
         const response = yield app.get("/error");
         expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
         expect(response.text).toMatchSnapshot();
@@ -87,7 +88,7 @@ describe("create-user-route", () => {
             throw new Error("Error message");
         });
         server.use(index_1.default());
-        app = supertest(server);
+        const app = supertest(server);
         const response = yield app
             .get("/error")
             .set("X-Requested-With", "XMLHttpRequest")
@@ -105,7 +106,7 @@ describe("create-user-route", () => {
         server.use(index_1.default({
             debug: false,
         }));
-        app = supertest(server);
+        const app = supertest(server);
         const response = yield app
             .get("/error")
             .set("X-Requested-With", "XMLHttpRequest")
@@ -124,10 +125,38 @@ describe("create-user-route", () => {
             });
         });
         server.use(index_1.default());
-        app = supertest(server);
+        const app = supertest(server);
         const response = yield app.get("/error");
         expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
         expect(response.text).toContain("Jack Daniels");
+        expect(response.text).toMatchSnapshot();
+    }));
+    it("can be configured to show message", () => __awaiter(this, void 0, void 0, function* () {
+        const server = express();
+        server.get("/error", (_request, _response, _next) => {
+            throw new Error("Test error");
+        });
+        server.use(index_1.default({
+            debug: false,
+            showMessage: true,
+        }));
+        const app = supertest(server);
+        const response = yield app.get("/error");
+        expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+        expect(response.text).toMatchSnapshot();
+    }));
+    it("can be configured not to show message", () => __awaiter(this, void 0, void 0, function* () {
+        const server = express();
+        server.get("/error", (_request, _response, _next) => {
+            throw new Error("Test error");
+        });
+        server.use(index_1.default({
+            debug: false,
+            showMessage: false,
+        }));
+        const app = supertest(server);
+        const response = yield app.get("/error");
+        expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
         expect(response.text).toMatchSnapshot();
     }));
     it("xhr error formatter accepts error without stack", () => __awaiter(this, void 0, void 0, function* () {
@@ -149,7 +178,7 @@ describe("create-user-route", () => {
             })();
         });
         server.use(index_1.default());
-        app = supertest(server);
+        const app = supertest(server);
         const response = yield app.get("/error");
         expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
         expect(response.text).toMatchSnapshot();
@@ -162,7 +191,22 @@ describe("create-user-route", () => {
             };
         });
         server.use(index_1.default());
-        app = supertest(server);
+        const app = supertest(server);
+        const response = yield app.get("/error");
+        expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+        expect(response.text).toMatchSnapshot();
+    }));
+    it("renders errors without trace hiding message", () => __awaiter(this, void 0, void 0, function* () {
+        const server = express();
+        server.get("/error", (_request, _response, _next) => {
+            // tslint:disable-next-line:no-string-throw
+            throw "foo";
+        });
+        server.use(index_1.default({
+            debug: true,
+            showMessage: false,
+        }));
+        const app = supertest(server);
         const response = yield app.get("/error");
         expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
         expect(response.text).toMatchSnapshot();

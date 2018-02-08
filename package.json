@@ -28,15 +28,7 @@
     "type": "git",
     "url": "https://github.com/kallaspriit/express-error-renderer.git"
   },
-  "keywords": [
-    "express",
-    "error",
-    "renderer",
-    "pretty",
-    "stack",
-    "trace",
-    "sourcemap"
-  ],
+  "keywords": ["express", "error", "renderer", "pretty", "stack", "trace", "sourcemap"],
   "author": "Priit Kallas <kallaspriit@gmail.com>",
   "license": "MIT",
   "bugs": {
@@ -61,38 +53,20 @@
     "prettier": "^1.6.1",
     "rimraf": "^2.6.1",
     "ts-jest": "^21.1.4",
-    "tsc-watch": "^1.0.8",
     "tslint": "^5.7.0",
     "tslint-config-prettier": "^1.5.0",
     "tslint-config-strict": "^1.3.0",
-    "tslint-eslint-rules": "^4.1.1",
     "typescript": "^2.5.2"
   },
   "jest": {
     "transform": {
       "^.+\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
-    "roots": [
-      "src"
-    ],
+    "roots": ["src"],
     "mapCoverage": true,
     "collectCoverage": false,
-    "collectCoverageFrom": [
-      "**/src/index.ts",
-      "**/routes/**/*.ts",
-      "!**/routes/index-route.ts"
-    ],
+    "collectCoverageFrom": ["**/src/index.ts", "**/routes/**/*.ts", "!**/routes/index-route.ts"],
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx)$",
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "json"
-    ]
-  },
-  "config": {
-    "ghooks": {
-      "pre-commit": "npm run test:single && npm run check-coverage"
-    }
+    "moduleFileExtensions": ["ts", "tsx", "js", "json"]
   }
 }

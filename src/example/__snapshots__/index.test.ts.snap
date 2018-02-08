@@ -2,6 +2,10 @@
 
 exports[`create-user-route can be configured not to show error details 1`] = `"Error message"`;
 
+exports[`create-user-route can be configured not to show message 1`] = `"Internal error occurred"`;
+
+exports[`create-user-route can be configured to show message 1`] = `"Test error"`;
+
 exports[`create-user-route can use default config 1`] = `
 "
     <html>
@@ -461,7 +465,7 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <ol class=\\"stack-trace\\">
       
     <li>
-      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:72</span>
+      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:71</span>
       <span class=\\"stack-line__method\\">(server.get)</span>
     </li>
   
@@ -473,17 +477,14 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <div class=\\"stack-frame\\">
       <div class=\\"source-file\\">
         <span class=\\"source-file__index\\">#1</span>
-        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">63</span>
+        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">64</span>
       </div>
       
-    <pre class=\\"source-code line-numbers\\" data-start=\\"43\\" data-line=\\"21\\">
-      <code class=\\"language-typescript\\">    const response = await app.get(\\"/next-error\\");
-
-    expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
-    expect(response.text).toMatchSnapshot();
-  });
+    <pre class=\\"source-code line-numbers\\" data-start=\\"44\\" data-line=\\"21\\">
+      <code class=\\"language-typescript\\">  });
 
   it(\\"should handle cyclic errors\\", async () => {
+    const app = supertest(await setupApp());
     const response = await app.get(\\"/cyclic-error\\");
 
     expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -491,6 +492,7 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
   });
 
   it(\\"should return error info as json if requested with XHR\\", async () => {
+    const app = supertest(await setupApp());
     const response = await app
       .get(\\"/throw-error\\")
       .set(\\"X-Requested-With\\", \\"XMLHttpRequest\\")
@@ -511,13 +513,15 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
 
     server.use(expressErrorRenderer());
 
-    app = supertest(server);
+    const app = supertest(server);
     const response = await app.get(\\"/error\\");
 
     expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
     expect(response.text).toMatchSnapshot();
   });
-</code></pre>
+
+  it(\\"can be configured not to show error details\\", async () => {
+    const server = express();</code></pre>
   
     </div>
   
@@ -985,7 +989,7 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <ol class=\\"stack-trace\\">
       
     <li>
-      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:153</span>
+      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:152</span>
       <span class=\\"stack-line__method\\">(server.get)</span>
     </li>
   
@@ -1003,13 +1007,11 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <div class=\\"stack-frame\\">
       <div class=\\"source-file\\">
         <span class=\\"source-file__index\\">#1</span>
-        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">120</span>
+        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">121</span>
       </div>
       
-    <pre class=\\"source-code line-numbers\\" data-start=\\"100\\" data-line=\\"21\\">
-      <code class=\\"language-typescript\\">    expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
-    expect(response.text).toMatchSnapshot();
-  });
+    <pre class=\\"source-code line-numbers\\" data-start=\\"101\\" data-line=\\"21\\">
+      <code class=\\"language-typescript\\">  });
 
   it(\\"uses default XHR error formatter by default\\", async () => {
     const server = express();
@@ -1020,7 +1022,7 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
 
     server.use(expressErrorRenderer());
 
-    app = supertest(server);
+    const app = supertest(server);
     const response = await app
       .get(\\"/error\\")
       .set(\\"X-Requested-With\\", \\"XMLHttpRequest\\")
@@ -1045,9 +1047,11 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
       }),
     );
 
-    app = supertest(server);
+    const app = supertest(server);
     const response = await app
-      .get(\\"/error\\")</code></pre>
+      .get(\\"/error\\")
+      .set(\\"X-Requested-With\\", \\"XMLHttpRequest\\")
+      .send();</code></pre>
   
     </div>
   
@@ -1515,13 +1519,13 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <ol class=\\"stack-trace\\">
       
     <li>
-      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:191</span>
+      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:232</span>
       
     </li>
   
 
     <li>
-      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:192</span>
+      <span class=\\"stack-line__source\\">express-error-renderer/src/example/index.test.ts:233</span>
       <span class=\\"stack-line__method\\">(server.get)</span>
     </li>
   
@@ -1533,51 +1537,51 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <div class=\\"stack-frame\\">
       <div class=\\"source-file\\">
         <span class=\\"source-file__index\\">#1</span>
-        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">148</span>
+        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">177</span>
       </div>
       
-    <pre class=\\"source-code line-numbers\\" data-start=\\"128\\" data-line=\\"21\\">
-      <code class=\\"language-typescript\\">    server.get(\\"/error\\", (_request, _response, _next) => {
-      throw new Error(\\"Error message\\");
-    });
-
-    server.use(
-      expressErrorRenderer({
-        debug: false,
-      }),
-    );
-
-    app = supertest(server);
-    const response = await app
-      .get(\\"/error\\")
-      .set(\\"X-Requested-With\\", \\"XMLHttpRequest\\")
-      .send();
-
-    expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
-    expect(response.body.error).toEqual(\\"Internal error occurred\\");
-    expect(response.body.stack).toBeUndefined();
-  });
-
-  it(\\"error can include additional information\\", async () => {
-    const server = express();
-
-    server.get(\\"/error\\", (_request, _response, _next) => {
-      throw new DetailedError(\\"Detailed error message\\", {
-        user: {
-          name: \\"Jack Daniels\\",
-        },
-      });
-    });
+    <pre class=\\"source-code line-numbers\\" data-start=\\"157\\" data-line=\\"21\\">
+      <code class=\\"language-typescript\\">    });
 
     server.use(expressErrorRenderer());
 
-    app = supertest(server);
+    const app = supertest(server);
     const response = await app.get(\\"/error\\");
 
     expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
     expect(response.text).toContain(\\"Jack Daniels\\");
     expect(response.text).toMatchSnapshot();
-  });</code></pre>
+  });
+
+  it(\\"can be configured to show message\\", async () => {
+    const server = express();
+
+    server.get(\\"/error\\", (_request, _response, _next) => {
+      throw new Error(\\"Test error\\");
+    });
+
+    server.use(
+      expressErrorRenderer({
+        debug: false,
+        showMessage: true,
+      }),
+    );
+
+    const app = supertest(server);
+    const response = await app.get(\\"/error\\");
+
+    expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(response.text).toMatchSnapshot();
+  });
+
+  it(\\"can be configured not to show message\\", async () => {
+    const server = express();
+
+    server.get(\\"/error\\", (_request, _response, _next) => {
+      throw new Error(\\"Test error\\");
+    });
+
+    server.use(</code></pre>
   
     </div>
   
@@ -1585,51 +1589,51 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
     <div class=\\"stack-frame\\">
       <div class=\\"source-file\\">
         <span class=\\"source-file__index\\">#2</span>
-        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">149</span>
+        <span class=\\"source-file__filename\\">express-error-renderer/src/example/index.test.ts</span>:<span class=\\"source-file__line\\">178</span>
       </div>
       
-    <pre class=\\"source-code line-numbers\\" data-start=\\"129\\" data-line=\\"21\\">
-      <code class=\\"language-typescript\\">      throw new Error(\\"Error message\\");
-    });
-
-    server.use(
-      expressErrorRenderer({
-        debug: false,
-      }),
-    );
-
-    app = supertest(server);
-    const response = await app
-      .get(\\"/error\\")
-      .set(\\"X-Requested-With\\", \\"XMLHttpRequest\\")
-      .send();
-
-    expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
-    expect(response.body.error).toEqual(\\"Internal error occurred\\");
-    expect(response.body.stack).toBeUndefined();
-  });
-
-  it(\\"error can include additional information\\", async () => {
-    const server = express();
-
-    server.get(\\"/error\\", (_request, _response, _next) => {
-      throw new DetailedError(\\"Detailed error message\\", {
-        user: {
-          name: \\"Jack Daniels\\",
-        },
-      });
-    });
-
+    <pre class=\\"source-code line-numbers\\" data-start=\\"158\\" data-line=\\"21\\">
+      <code class=\\"language-typescript\\">
     server.use(expressErrorRenderer());
 
-    app = supertest(server);
+    const app = supertest(server);
     const response = await app.get(\\"/error\\");
 
     expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
     expect(response.text).toContain(\\"Jack Daniels\\");
     expect(response.text).toMatchSnapshot();
   });
-</code></pre>
+
+  it(\\"can be configured to show message\\", async () => {
+    const server = express();
+
+    server.get(\\"/error\\", (_request, _response, _next) => {
+      throw new Error(\\"Test error\\");
+    });
+
+    server.use(
+      expressErrorRenderer({
+        debug: false,
+        showMessage: true,
+      }),
+    );
+
+    const app = supertest(server);
+    const response = await app.get(\\"/error\\");
+
+    expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
+    expect(response.text).toMatchSnapshot();
+  });
+
+  it(\\"can be configured not to show message\\", async () => {
+    const server = express();
+
+    server.get(\\"/error\\", (_request, _response, _next) => {
+      throw new Error(\\"Test error\\");
+    });
+
+    server.use(
+      expressErrorRenderer({</code></pre>
   
     </div>
   
@@ -1639,6 +1643,8 @@ Prism.languages.typescript=Prism.languages.extend(\\"javascript\\",{keyword:/\\\
 `;
 
 exports[`create-user-route renders errors without trace 1`] = `"Error message"`;
+
+exports[`create-user-route renders errors without trace hiding message 1`] = `"Internal error occurred"`;
 
 exports[`create-user-route should handle cyclic errors 1`] = `
 "
