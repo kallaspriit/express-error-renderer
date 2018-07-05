@@ -15,7 +15,12 @@ const path = require("path");
 const stackman = require("stackman");
 function expressErrorRenderer(userOptions = {}) {
     const options = Object.assign({ basePath: path.join(__dirname, "..", ".."), debug: true, showMessage: true }, userOptions);
-    return (error, request, response, _next) => {
+    return (error, request, response, next) => {
+        // delegate to express default handler that closes the connection and fails the request if headers already sent
+        if (response.headersSent) {
+            next(error);
+            return;
+        }
         // respond to xhr requests with json (true if X-Requested-With header equals XMLHttpRequest)
         if (request.xhr) {
             // use user-provided formatter if available

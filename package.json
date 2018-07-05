@@ -1,6 +1,6 @@
 {
   "name": "express-error-renderer",
-  "version": "1.8.3",
+  "version": "1.8.5",
   "description": "Middleware for rendering express errors with error details, source-mapped stack traces.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -21,13 +21,22 @@
     "test-watch": "jest --watch --collectCoverage",
     "coverage": "yarn tidy:coverage && jest --collectCoverage",
     "coveralls": "cat ./coverage/lcov.info | coveralls",
-    "precommit": "yarn prettier && yarn build && yarn lint-fix && git add -A"
+    "precommit": "yarn prettier && yarn build && yarn lint-fix && git add -A",
+    "audit": "yarn prettier && yarn build && yarn lint && yarn coverage"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/kallaspriit/express-error-renderer.git"
   },
-  "keywords": ["express", "error", "renderer", "pretty", "stack", "trace", "sourcemap"],
+  "keywords": [
+    "express",
+    "error",
+    "renderer",
+    "pretty",
+    "stack",
+    "trace",
+    "sourcemap"
+  ],
   "author": "Priit Kallas <kallaspriit@gmail.com>",
   "license": "MIT",
   "bugs": {
@@ -61,11 +70,22 @@
     "transform": {
       "^.+\\.(ts|tsx)$": "<rootDir>/node_modules/ts-jest/preprocessor.js"
     },
-    "roots": ["src"],
+    "roots": [
+      "src"
+    ],
     "mapCoverage": true,
     "collectCoverage": false,
-    "collectCoverageFrom": ["**/src/index.ts", "**/routes/**/*.ts", "!**/routes/index-route.ts"],
+    "collectCoverageFrom": [
+      "**/src/index.ts",
+      "**/routes/**/*.ts",
+      "!**/routes/index-route.ts"
+    ],
     "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx)$",
-    "moduleFileExtensions": ["ts", "tsx", "js", "json"]
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "json"
+    ]
   }
 }

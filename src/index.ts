@@ -35,7 +35,14 @@ export default function expressErrorRenderer(userOptions: Partial<IOptions> = {}
     ...userOptions,
   };
 
-  return (error: Error, request: Request, response: Response, _next: NextFunction) => {
+  return (error: Error, request: Request, response: Response, next: NextFunction) => {
+    // delegate to express default handler that closes the connection and fails the request if headers already sent
+    if (response.headersSent) {
+      next(error);
+
+      return;
+    }
+
     // respond to xhr requests with json (true if X-Requested-With header equals XMLHttpRequest)
     if (request.xhr) {
       // use user-provided formatter if available
